@@ -41,17 +41,20 @@
     "node": ">=4.0.0"
   },
   "devDependencies": {
-    "ts-jest": "^20.0.0",
     "@types/jest": "^19.2.4",
-    "tslint": "^5.4.3",
-    "danger": "*",
+    "@types/node": "^9.4.6",
     "commitizen": "^2.9.6",
     "cz-conventional-changelog": "^2.0.0",
+    "danger": "*",
+    "fs": "^0.0.1-security",
     "husky": "^0.13.3",
     "jest": "^20.0.1",
     "lint-staged": "^3.4.1",
+    "memfs": "^2.8.0",
     "prettier": "^1.3.1",
     "semantic-release": "^6.3.6",
+    "ts-jest": "^20.0.0",
+    "tslint": "^5.4.3",
     "typescript": "^2.3.2",
     "validate-commit-msg": "^2.12.1"
   },
