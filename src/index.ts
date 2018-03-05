@@ -18,8 +18,28 @@ export interface KarmaInstanbulConfig {
     statements: number,
     branches: number,
     functions: number,
+    lines: number,
   },
   reportMode: ReportMode
+}
+
+interface CoverageItem {
+  total: number,
+  covered: number,
+  skipped: number,
+  pct: number
+}
+
+interface CoverageEntry {
+  lines: CoverageItem,
+  functions: CoverageItem,
+  statements: CoverageItem,
+  branches: CoverageItem,
+}
+
+interface CoverageModel {
+  "total": CoverageEntry,
+  [key: string]: CoverageEntry,
 }
 
 /**
@@ -34,6 +54,7 @@ export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
       statements: 100,
       branches: 100,
       functions: 100,
+      lines: 100,
     },
   }
   const combinedConfig = config ? { ... defaults, ... config } : defaults
@@ -43,6 +64,19 @@ export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
 
   if (!filesystem.exists(resolvedPath)) {
     warn(`Couldn't find instanbul coverage json file at path '${resolvedPath}'.`)
+    return
+  }
+
+  const emptyMessage = `Coverage data had invalid formatting at path '${resolvedPath}'`
+
+  try {
+    const json = JSON.parse(filesystem.read(resolvedPath))
+    if (Object.keys(json).length === 0) {
+      // Don't output anything if there is no coverage data.
+      return
+    }
+  } catch (error) {
+    warn(emptyMessage)
     return
   }
 

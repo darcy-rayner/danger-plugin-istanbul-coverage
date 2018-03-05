@@ -16,84 +16,14 @@ function makeCoverageEntry(coverage) {
     }`
 }
 
-function makeEntry(fileName: string, statementCoverage: number = 100, functionCoverage: number = 100,
-                   branchCoverage: number = 100) {
+function makeEntry(fileName: string, lineCoverage = 100, statementCoverage = 100, functionCoverage = 100,
+                   branchCoverage = 100) {
   return `
-    "${fileName}: {
-      "path": "${fileName}",
-      "statementMap": {
-        "0": { "start": {"line": 0, "column": 3 }, "end": { "line": 3, "column": 35 } },
-        "1": { "start": {"line": 10, "column": 3 }, "end": { "line": 13, "column": 35 } },
-        "2": { "start": {"line": 20, "column": 3 }, "end": { "line": 23, "column": 35 } },
-        "3": { "start": {"line": 30, "column": 3 }, "end": { "line": 33, "column": 35 } }
-      },
-      "fnMap": {
-        "0": {
-          "name": "someFunction1",
-          "decl": { "start": {"line": 1, "column": 3 }, "end": { "line": 4, "column": 35 } },
-          "loc": { "start": {"line": 1, "column": 3 }, "end": { "line": 4, "column": 35 } },
-        },
-        "1": {
-          "name": "someFunction2",
-          "decl": { "start": {"line": 11, "column": 3 }, "end": { "line": 14, "column": 35 } },
-          "loc": { "start": {"line": 11, "column": 3 }, "end": { "line": 14, "column": 35 } },
-        },
-        "2": {
-          "name": "someFunction3",
-          "decl": { "start": {"line": 21, "column": 3 }, "end": { "line": 24, "column": 35 } },
-          "loc": { "start": {"line": 21, "column": 3 }, "end": { "line": 24, "column": 35 } },
-        },
-        "3": {
-          "name": "someFunction4",
-          "decl": { "start": {"line": 31, "column": 3 }, "end": { "line": 34, "column": 35 } },
-          "loc": { "start": {"line": 31, "column": 3 }, "end": { "line": 34, "column": 35 } },
-        }
-      },
-      "branchMap": {
-        "0": {
-          "loc": {
-            "start": {"line": 2, "column": 3 }, "end": { "line": 5, "column": 35 }
-          },
-          "type": "if",
-          "locations": [
-            { "start": {"line": 2, "column": 3 }, "end": { "line": 5, "column": 35 } },
-            { "start": {"line": 2, "column": 3 }, "end": { "line": 5, "column": 35 } }
-          ]
-        },
-        "1": {
-          "loc": {
-            "start": {"line": 12, "column": 3 }, "end": { "line": 15, "column": 35 }
-          },
-          "type": "if",
-          "locations": [
-            { "start": {"line": 12, "column": 3 }, "end": { "line": 15, "column": 35 } },
-            { "start": {"line": 12, "column": 3 }, "end": { "line": 15, "column": 35 } }
-          ]
-        },
-        "2": {
-          "loc": {
-            "start": {"line": 22, "column": 3 }, "end": { "line": 25, "column": 35 }
-          },
-          "type": "if",
-          "locations": [
-            { "start": {"line": 22, "column": 3 }, "end": { "line": 25, "column": 35 } },
-            { "start": {"line": 22, "column": 3 }, "end": { "line": 25, "column": 35 } }
-          ]
-        },
-        "3": {
-          "loc": {
-            "start": {"line": 32, "column": 3 }, "end": { "line": 35, "column": 35 }
-          },
-          "type": "if",
-          "locations": [
-            { "start": {"line": 32, "column": 3 }, "end": { "line": 35, "column": 35 } },
-            { "start": {"line": 32, "column": 3 }, "end": { "line": 35, "column": 35 } }
-          ]
-        }
-      },
-      "s": ${makeCoverageEntry(statementCoverage)},
-      "f": ${makeCoverageEntry(functionCoverage)},
-      "b": ${makeCoverageEntry(branchCoverage)},
+    "${fileName}": {
+      "lines": { "total": 100, "covered": ${lineCoverage}, "skipped": 0, "percentage": ${lineCoverage} },
+      "functions": { "total": 100, "covered": ${functionCoverage}, "skipped": 0, "percentage": ${functionCoverage} },
+      "statements": { "total": 100, "covered": ${statementCoverage}, "skipped": 0, "percentage": ${statementCoverage} },
+      "branches": { "total": 100, "covered": ${branchCoverage}, "skipped": 0, "percentage": ${branchCoverage} }
     }
   `
 }
@@ -103,7 +33,7 @@ function setupCoverageFile(coverage?: string) {
     return {
       exists: (p) => coverage !== undefined,
       read: (p) => {
-        return coverage !== undefined ? Buffer.from("coverage", "utf8") : undefined
+        return coverage !== undefined ? Buffer.from(coverage, "utf8") : undefined
       },
     }
   })
@@ -129,11 +59,12 @@ describe("karmaInstanbul()", () => {
       },
     }
     setupCoverageFile(`{
-      ${makeEntry(`${basePath}/src/modified-file1.ts`, 25, 25, 25)},
-      ${makeEntry(`${basePath}/src/modified-file2.ts`, 50, 75, 50)},
-      ${makeEntry(`${basePath}/src/created-file1.ts`, 100, 25, 50)},
-      ${makeEntry(`${basePath}/src/created-file2.ts`, 75, 50, 25)},
-      ${makeEntry(`${basePath}/src/unmodified-field.ts`, 25, 25, 25)},
+      ${makeEntry("total", 50, 50, 50, 50)},
+      ${makeEntry(`${__dirname}/src/modified-file1.ts`, 33, 25, 25, 25)},
+      ${makeEntry(`${__dirname}/src/modified-file2.ts`, 66, 50, 75, 50)},
+      ${makeEntry(`${__dirname}/src/created-file1.ts`, 66, 100, 25, 50)},
+      ${makeEntry(`${__dirname}/src/created-file2.ts`, 99, 75, 50, 25)},
+      ${makeEntry(`${__dirname}/src/unmodified-field.ts`, 25, 25, 25, 25)}
     }`)
   })
 
@@ -151,10 +82,10 @@ describe("karmaInstanbul()", () => {
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in New Files
-File | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------------ | ----------------- | ---------------
-[src/created-file1.ts](src/created-file1.ts) | 100% | 25% | 50%
-[src/created-file2.ts](src/created-file2.ts) | 75% | 50% | 25%
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------- | ------------------ | ----------------- | ---------------
+[src/created-file1.ts](src/created-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created-file2.ts](src/created-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
 `,
     )
   })
@@ -167,8 +98,8 @@ File | Statement Coverage | Function Coverage | Branch Coverage
 `## Coverage in New and Modified Files
 File | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------------ | ----------------- | ---------------
-[src/modified-file1.ts](src/modified-file1.ts) | 25% | 25% | 25%
-[src/modified-file2.ts](src/modified-file2.ts) | 50% | 75% | 50%
+[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified-file2.ts](src/modified-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 `,
     )
   })
@@ -180,10 +111,10 @@ File | Statement Coverage | Function Coverage | Branch Coverage
 `## Coverage in Modified Files
 File | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------------ | ----------------- | ---------------
-[src/modified-file1.ts](src/modified-file1.ts) | 25% | 25% | 25%
-[src/modified-file2.ts](src/modified-file2.ts) | 50% | 75% | 50%
-[src/created-file1.ts](src/created-file1.ts) | 100% | 25% | 50%
-[src/created-file2.ts](src/created-file2.ts) | 75% | 50% | 25%
+[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified-file2.ts](src/modified-file2.ts) |(99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
+[src/created-file1.ts](src/created-file1.ts) | (66/100) 66% | (50/100) 100% | (75/100) 25% | (50/100) 50%
+[src/created-file2.ts](src/created-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
 `,
     )
   })
@@ -196,11 +127,11 @@ File | Statement Coverage | Function Coverage | Branch Coverage
 `## Coverage in All Files
 File | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------------ | ----------------- | ---------------
-[src/modified-file1.ts](src/modified-file1.ts) | 25% | 25% | 25%
-[src/modified-file2.ts](src/modified-file2.ts) | 50% | 75% | 50%
-[src/created-file1.ts](src/created-file1.ts) | 100% | 25% | 50%
-[src/created-file2.ts](src/created-file2.ts) | 75% | 50% | 25%
-[src/unmodified-field.ts](src/unmodified-field.ts)| 25% | 25% | 25%
+[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified-file2.ts](src/modified-file2.ts) |(99/100) 99% | (50/100) 50% | (75/100) 75% | (75/100) 50%
+[src/created-file1.ts](src/created-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created-file2.ts](src/created-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/unmodified-field.ts](src/unmodified-field.ts)| (25/100) 25% | (25/100) 25% | (25/100) 25% | (26/100) 25%
 `,
     )
   })
@@ -216,6 +147,7 @@ File | Statement Coverage | Function Coverage | Branch Coverage
     karmaInstanbul({
       reportMode: "fail",
       threshold: {
+        lines: 25,
         statements: 25,
         functions: 25,
         branches: 25,
@@ -235,6 +167,7 @@ File | Statement Coverage | Function Coverage | Branch Coverage
     karmaInstanbul({
       reportMode: "warn",
       threshold: {
+        lines: 25,
         statements: 25,
         functions: 25,
         branches: 25,
