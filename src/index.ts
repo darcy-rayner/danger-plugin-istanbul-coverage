@@ -68,6 +68,7 @@ export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
   }
 
   const emptyMessage = `Coverage data had invalid formatting at path '${resolvedPath}'`
+  let coverage: CoverageModel
 
   try {
     const json = JSON.parse(filesystem.read(resolvedPath))
@@ -75,8 +76,28 @@ export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
       // Don't output anything if there is no coverage data.
       return
     }
+    coverage = json as CoverageModel
   } catch (error) {
     warn(emptyMessage)
+    return
+  }
+
+  const modifiedFiles = danger.git.modified_files
+    .map( (filename) => path.resolve(__dirname, filename) )
+    .filter( filename => {
+      return coverage[filename] !== undefined
+    })
+  const createdFiles = danger.git.created_files
+    .map( (filename) => path.resolve(__dirname, filename))
+    .filter( filename => {
+      return coverage[filename] !== undefined
+    })
+
+  if (combinedConfig.reportChangeType === "modified" && modifiedFiles.length === 0) {
+    return
+  }
+
+  if (combinedConfig.reportChangeType === "created" && createdFiles.length === 0) {
     return
   }
 

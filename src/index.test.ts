@@ -176,7 +176,7 @@ File | Statement Coverage | Function Coverage | Branch Coverage
     expect(global.warn).not.toBeCalled()
   })
   it("doesn't output anything when reportChangeType is set to \"created\" and there are no created files ", () => {
-    global.danger.created_files = []
+    global.danger.git.created_files = []
     karmaInstanbul({
       reportMode: "fail",
       reportChangeType: "created",
@@ -187,7 +187,7 @@ File | Statement Coverage | Function Coverage | Branch Coverage
   })
 
   it("doesn't output anything when reportChangeType is set to \"modified\" and there are no modified files ", () => {
-    global.danger.modified_files = []
+    global.danger.git.modified_files = []
     karmaInstanbul({
       reportMode: "fail",
       reportChangeType: "modified",

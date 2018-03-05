@@ -74,6 +74,7 @@
     ]
   },
   "jest": {
+    "verbose": true,
     "moduleFileExtensions": [
       "ts",
       "tsx",
