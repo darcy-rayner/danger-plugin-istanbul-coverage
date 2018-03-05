@@ -1,5 +1,7 @@
-import { Volume } from "memfs"
-import { karmaInstanbul, ReportChangeType, ReportMode } from "./index"
+import * as path from "path"
+import FilesystemService from "./filesystem.service"
+import { karmaInstanbul, KarmaInstanbulConfig } from "./index"
+jest.mock("./filesystem.service")
 
 declare const global: any
 
@@ -96,15 +98,19 @@ function makeEntry(fileName: string, statementCoverage: number = 100, functionCo
   `
 }
 
-function setupCoverageFile(coverage) {
-  const volume = Volume.fromJSON({
-    "./coverage/coverage-final.json": coverage,
+function setupCoverageFile(coverage?: string) {
+  (FilesystemService as any).mockImplementation( () => {
+    return {
+      exists: (p) => coverage !== undefined,
+      read: (p) => {
+        return coverage !== undefined ? Buffer.from("coverage", "utf8") : undefined
+      },
+    }
   })
-  jest.setMock("fs", volume)
 }
 
-
 describe("karmaInstanbul()", () => {
+
   beforeEach(() => {
     global.warn = jest.fn()
     global.message = jest.fn()
@@ -139,9 +145,9 @@ describe("karmaInstanbul()", () => {
     jest.resetAllMocks()
   })
 
-  it("will only report on new files when reportChangeType is set to CREATED_FILES", () => {
+  it("will only report on new files when reportChangeType is set to \"created\"", () => {
     karmaInstanbul({
-      reportChangeType: ReportChangeType.CREATED_FILES,
+      reportChangeType: "created",
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in New Files
@@ -153,9 +159,9 @@ File | Statement Coverage | Function Coverage | Branch Coverage
     )
   })
 
-  it("will only report on modified files when reportChangeType is set to MODIFIED_FILES", () => {
+  it("will only report on modified files when reportChangeType is set to \"modified\"", () => {
     karmaInstanbul({
-      reportChangeType: ReportChangeType.CREATED_FILES,
+      reportChangeType: "modified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in New and Modified Files
@@ -166,9 +172,9 @@ File | Statement Coverage | Function Coverage | Branch Coverage
 `,
     )
   })
-  it("will only report on created and modified files when reportChangeType is set to CREATED_OR_MODIFIED_FILES", () => {
+  it("will only report on created and modified files when reportChangeType is set to \"createdOrModified\"", () => {
     karmaInstanbul({
-      reportChangeType: ReportChangeType.CREATED_FILES,
+      reportChangeType: "createdOrModified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in Modified Files
@@ -182,9 +188,9 @@ File | Statement Coverage | Function Coverage | Branch Coverage
     )
   })
 
-  it("will report all files when reportChangeType is set to ALL_FILES", () => {
+  it("will report all files when reportChangeType is set to \"all\"", () => {
     karmaInstanbul({
-      reportChangeType: ReportChangeType.CREATED_FILES,
+      reportChangeType: "all",
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in All Files
@@ -201,14 +207,14 @@ File | Statement Coverage | Function Coverage | Branch Coverage
 
   it("fails the build when reportMode is set to FAIL and coverage is below threshold", () => {
     karmaInstanbul({
-      reportMode: ReportMode.FAIL,
+      reportMode: "fail",
     })
     expect(global.fail).toBeCalled()
   })
 
   it("passes the build when reportMode is set to FAIL and coverage is above threshold", () => {
     karmaInstanbul({
-      reportMode: ReportMode.FAIL,
+      reportMode: "fail",
       threshold: {
         statements: 25,
         functions: 25,
@@ -220,14 +226,14 @@ File | Statement Coverage | Function Coverage | Branch Coverage
 
   it("warns the build when reportMode is set to WARN and coverage is below threshold", () => {
     karmaInstanbul({
-      reportMode: ReportMode.WARN,
+      reportMode: "warn",
     })
     expect(global.warn).toBeCalled()
   })
 
   it("passes the build when reportMode is set to WARN and coverage is above threshold", () => {
     karmaInstanbul({
-      reportMode: ReportMode.WARN,
+      reportMode: "warn",
       threshold: {
         statements: 25,
         functions: 25,
@@ -236,39 +242,40 @@ File | Statement Coverage | Function Coverage | Branch Coverage
     })
     expect(global.warn).not.toBeCalled()
   })
-  it("doesn't output anything when reportChangeType is set to CREATED_FILES and there are no created files ", () => {
+  it("doesn't output anything when reportChangeType is set to \"created\" and there are no created files ", () => {
     global.danger.created_files = []
     karmaInstanbul({
-      reportMode: ReportMode.FAIL,
-      reportChangeType: ReportChangeType.CREATED_FILES,
+      reportMode: "fail",
+      reportChangeType: "created",
     })
     expect(global.fail).not.toBeCalled()
+    expect(global.warn).not.toBeCalled()
     expect(global.message).not.toBeCalled()
   })
 
-  it("doesn't output anything when reportChangeType is set to MODIFIED_FILES and there are no modified files ", () => {
+  it("doesn't output anything when reportChangeType is set to \"modified\" and there are no modified files ", () => {
     global.danger.modified_files = []
     karmaInstanbul({
-      reportMode: ReportMode.FAIL,
-      reportChangeType: ReportChangeType.MODIFIED_FILES,
+      reportMode: "fail",
+      reportChangeType: "modified",
     })
     expect(global.fail).not.toBeCalled()
+    expect(global.warn).not.toBeCalled()
     expect(global.message).not.toBeCalled()
   })
-  it("doesn't output anything when there is coverage data is empty", () => {
+  it("doesn't output anything when the coverage data is empty", () => {
     setupCoverageFile("{}")
     karmaInstanbul({
-      reportMode: ReportMode.FAIL,
+      reportMode: "fail",
     })
     expect(global.fail).not.toBeCalled()
+    expect(global.warn).not.toBeCalled()
     expect(global.message).not.toBeCalled()
   })
   it("outputs a warning when it can't find the coverage file", () => {
-    const volume = Volume.fromJSON({})
-    jest.setMock("fs", volume)
-
+    setupCoverageFile(undefined)
     karmaInstanbul({
-      reportMode: ReportMode.FAIL,
+      reportMode: "fail",
     })
     expect(global.warn).toBeCalled()
   })
