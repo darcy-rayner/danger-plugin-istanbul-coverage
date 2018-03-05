@@ -8,7 +8,7 @@ export declare function warn(message: string): void
 export declare function fail(message: string): void
 export declare function markdown(message: string): void
 
-export type ReportChangeType = "created" | "modified" | "createdOrModified" | "all";
+export type ReportChangeType = "created" | "modified" | "createdOrModified" | "all"
 export type ReportMode = "fail" | "warn" | "message"
 
 export interface KarmaInstanbulConfig {
@@ -42,10 +42,30 @@ interface CoverageModel {
   [key: string]: CoverageEntry,
 }
 
-/**
- * Danger.js plugin for monitoring code coverage on changed files.
- */
-export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
+function parseCoverageModel(coveragePath: string): CoverageModel | undefined {
+  const resolvedPath = path.resolve(__dirname, coveragePath)
+  const filesystem = new FilesystemService()
+  const emptyMessage = `Coverage data had invalid formatting at path '${resolvedPath}'`
+
+  if (!filesystem.exists(resolvedPath)) {
+    warn(`Couldn't find instanbul coverage json file at path '${resolvedPath}'.`)
+    return undefined
+  }
+
+  try {
+    const json = JSON.parse(filesystem.read(resolvedPath))
+    if (Object.keys(json).length === 0) {
+      // Don't output anything if there is no coverage data.
+      return undefined
+    }
+    return json as CoverageModel
+  } catch (error) {
+    warn(emptyMessage)
+    return
+  }
+}
+
+function makeCompleteConfiguration(config?: Partial<KarmaInstanbulConfig>): KarmaInstanbulConfig {
   const defaults: KarmaInstanbulConfig = {
     coveragePath: "./coverage/coverage-final.json",
     reportChangeType: "all",
@@ -57,41 +77,26 @@ export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
       lines: 100,
     },
   }
-  const combinedConfig = config ? { ... defaults, ... config } : defaults
+  return config ? { ... defaults, ... config } : defaults
+}
 
-  const resolvedPath = path.resolve(__dirname, combinedConfig.coveragePath)
-  const filesystem = new FilesystemService()
-
-  if (!filesystem.exists(resolvedPath)) {
-    warn(`Couldn't find instanbul coverage json file at path '${resolvedPath}'.`)
-    return
-  }
-
-  const emptyMessage = `Coverage data had invalid formatting at path '${resolvedPath}'`
-  let coverage: CoverageModel
-
-  try {
-    const json = JSON.parse(filesystem.read(resolvedPath))
-    if (Object.keys(json).length === 0) {
-      // Don't output anything if there is no coverage data.
-      return
-    }
-    coverage = json as CoverageModel
-  } catch (error) {
-    warn(emptyMessage)
-    return
-  }
-
-  const modifiedFiles = danger.git.modified_files
+function filterForCoveredFiles(files: string[], coverage: CoverageModel): string[] {
+  return files
     .map( (filename) => path.resolve(__dirname, filename) )
-    .filter( filename => {
-      return coverage[filename] !== undefined
-    })
-  const createdFiles = danger.git.created_files
-    .map( (filename) => path.resolve(__dirname, filename))
-    .filter( filename => {
-      return coverage[filename] !== undefined
-    })
+    .filter( filename => coverage[filename] !== undefined)
+}
+
+/**
+ * Danger.js plugin for monitoring code coverage on changed files.
+ */
+export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
+
+  const combinedConfig = makeCompleteConfiguration(config)
+  const coverage = parseCoverageModel(combinedConfig.coveragePath)
+  if (!coverage) { return }
+
+  const modifiedFiles = filterForCoveredFiles(danger.git.modified_files, coverage)
+  const createdFiles = filterForCoveredFiles(danger.git.created_files, coverage)
 
   if (combinedConfig.reportChangeType === "modified" && modifiedFiles.length === 0) {
     return
@@ -100,6 +105,7 @@ export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
   if (combinedConfig.reportChangeType === "created" && createdFiles.length === 0) {
     return
   }
+
 
   throw Error("Unimplemented")
 }
