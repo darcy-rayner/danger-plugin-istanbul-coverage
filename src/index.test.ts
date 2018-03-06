@@ -20,10 +20,10 @@ function makeEntry(fileName: string, lineCoverage = 100, statementCoverage = 100
                    branchCoverage = 100) {
   return `
     "${fileName}": {
-      "lines": { "total": 100, "covered": ${lineCoverage}, "skipped": 0, "percentage": ${lineCoverage} },
-      "functions": { "total": 100, "covered": ${functionCoverage}, "skipped": 0, "percentage": ${functionCoverage} },
-      "statements": { "total": 100, "covered": ${statementCoverage}, "skipped": 0, "percentage": ${statementCoverage} },
-      "branches": { "total": 100, "covered": ${branchCoverage}, "skipped": 0, "percentage": ${branchCoverage} }
+      "lines": { "total": 100, "covered": ${lineCoverage}, "skipped": 0, "pct": ${lineCoverage} },
+      "functions": { "total": 100, "covered": ${functionCoverage}, "skipped": 0, "pct": ${functionCoverage} },
+      "statements": { "total": 100, "covered": ${statementCoverage}, "skipped": 0, "pct": ${statementCoverage} },
+      "branches": { "total": 100, "covered": ${branchCoverage}, "skipped": 0, "pct": ${branchCoverage} }
     }
   `
 }
@@ -60,8 +60,8 @@ describe("karmaInstanbul()", () => {
     }
     setupCoverageFile(`{
       ${makeEntry("total", 50, 50, 50, 50)},
-      ${makeEntry(`${__dirname}/src/modified-file1.ts`, 33, 25, 25, 25)},
-      ${makeEntry(`${__dirname}/src/modified-file2.ts`, 66, 50, 75, 50)},
+      ${makeEntry(`${__dirname}/src/modified-file1.ts`, 66, 25, 25, 25)},
+      ${makeEntry(`${__dirname}/src/modified-file2.ts`, 99, 50, 75, 50)},
       ${makeEntry(`${__dirname}/src/created-file1.ts`, 66, 100, 25, 50)},
       ${makeEntry(`${__dirname}/src/created-file2.ts`, 99, 75, 50, 25)},
       ${makeEntry(`${__dirname}/src/unmodified-field.ts`, 25, 25, 25, 25)}
@@ -95,9 +95,9 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
       reportChangeType: "modified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
-`## Coverage in New and Modified Files
-File | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------------ | ----------------- | ---------------
+`## Coverage in Modified Files
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------- | ------------------ | ----------------- | ---------------
 [src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 [src/modified-file2.ts](src/modified-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 `,
@@ -108,13 +108,13 @@ File | Statement Coverage | Function Coverage | Branch Coverage
       reportChangeType: "createdOrModified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
-`## Coverage in Modified Files
-File | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------------ | ----------------- | ---------------
-[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-[src/modified-file2.ts](src/modified-file2.ts) |(99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
-[src/created-file1.ts](src/created-file1.ts) | (66/100) 66% | (50/100) 100% | (75/100) 25% | (50/100) 50%
+`## Coverage in Created or Modified Files
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------- | ------------------ | ----------------- | ---------------
+[src/created-file1.ts](src/created-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
 [src/created-file2.ts](src/created-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified-file2.ts](src/modified-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 `,
     )
   })
@@ -125,13 +125,13 @@ File | Statement Coverage | Function Coverage | Branch Coverage
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in All Files
-File | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------------ | ----------------- | ---------------
-[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-[src/modified-file2.ts](src/modified-file2.ts) |(99/100) 99% | (50/100) 50% | (75/100) 75% | (75/100) 50%
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------- | ------------------ | ----------------- | ---------------
 [src/created-file1.ts](src/created-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
 [src/created-file2.ts](src/created-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
-[src/unmodified-field.ts](src/unmodified-field.ts)| (25/100) 25% | (25/100) 25% | (25/100) 25% | (26/100) 25%
+[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified-file2.ts](src/modified-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
+[src/unmodified-field.ts](src/unmodified-field.ts) | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 `,
     )
   })
