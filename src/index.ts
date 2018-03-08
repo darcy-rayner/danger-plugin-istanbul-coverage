@@ -86,7 +86,7 @@ function formatItem(item: CoverageItem) {
 }
 
 function formatSourceName(source: string) {
-  const escapedCharacters = ["|", "(", ")", "[", "]", "#", "*"]
+  const escapedCharacters = ["|", "(", ")", "[", "]", "#", "*", "{", "}", "-", "+", "_", "!", "\\", "`"]
   return [...source]
     .map(c => _.includes(escapedCharacters, c) ? `\\${c}` : c)
     .join("")
@@ -134,10 +134,14 @@ export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
   let coverage: CoverageModel
   try {
     const parsedCoverage = parseCoverageModel(combinedConfig.coveragePath)
-    if (!parsedCoverage) { return }
+    if (!parsedCoverage) {
+      console.log("A")
+      return
+    }
     coverage = parsedCoverage
   } catch (error) {
     warn(error)
+    console.log("B")
     return
   }
 

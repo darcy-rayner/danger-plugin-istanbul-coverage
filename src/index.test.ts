@@ -84,8 +84,8 @@ describe("karmaInstanbul()", () => {
 `## Coverage in New Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
-[src/created-file1.ts](src/created-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
-[src/created-file2.ts](src/created-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/created\\-file1.ts](src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created\\-file2.ts](src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
 Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
 `,
     )
@@ -99,8 +99,8 @@ Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
 `## Coverage in Modified Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
-[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-[src/modified-file2.ts](src/modified-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
+[src/modified\\-file1.ts](src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified\\-file2.ts](src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 Total | (165/200) 83% | (75/200) 38% | (100/200) 50% | (75/200) 38%
 `,
     )
@@ -113,10 +113,10 @@ Total | (165/200) 83% | (75/200) 38% | (100/200) 50% | (75/200) 38%
 `## Coverage in Created or Modified Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
-[src/created-file1.ts](src/created-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
-[src/created-file2.ts](src/created-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
-[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-[src/modified-file2.ts](src/modified-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
+[src/created\\-file1.ts](src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created\\-file2.ts](src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/modified\\-file1.ts](src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified\\-file2.ts](src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
 `,
     )
@@ -130,11 +130,11 @@ Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
 `## Coverage in All Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
-[src/created-file1.ts](src/created-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
-[src/created-file2.ts](src/created-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
-[src/modified-file1.ts](src/modified-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-[src/modified-file2.ts](src/modified-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
-[src/unmodified-field.ts](src/unmodified-field.ts) | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/created\\-file1.ts](src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created\\-file2.ts](src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/modified\\-file1.ts](src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified\\-file2.ts](src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
+[src/unmodified\\-field.ts](src/unmodified\\-field.ts) | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
 `,
     )
@@ -217,12 +217,14 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
     expect(global.warn).toBeCalled()
   })
 
-  it("escapes filenames with '|,(,),[,],#,*>' characters", () => {
+  it("escapes filenames with '|,(,),[,],#,*,{,},-,+,_,!,\\,`>' characters", () => {
+    // Excapes the list of special markdown characters, mentioned here:
+    // https://daringfireball.net/projects/markdown/syntax#backslash
     setupCoverageFile(`{
-      ${makeEntry(`${__dirname}/src/file-with-characters[(|#*)].ts`, 25, 25, 25, 25)}
+      ${makeEntry(`${__dirname}/src/file-with-characters{[(|#*-+_!\`)]}.ts`, 25, 25, 25, 25)}
     }`)
     karmaInstanbul()
-    const expectedFilename = `src/file-with-characters\\[\\(\\|\\#\\*\\)\\].ts`
+    const expectedFilename = `src/file\\-with\\-characters\\{\\[\\(\\|\\#\\*\\-\\+\\_\\!\\\`\\)\\]\\}.ts`
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in All Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
