@@ -1,5 +1,23 @@
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
-import {DangerDSLType} from "../node_modules/danger/distribution/dsl/DangerDSL"
+import { DangerDSLType } from "../node_modules/danger/distribution/dsl/DangerDSL"
+import {
+  CoverageThreshold,
+  KarmaInstanbulConfig,
+  makeCompleteConfiguration,
+  ReportChangeType,
+  ReportMode,
+} from "./config.model"
+import {
+  combineEntries,
+  combineItems,
+  CoverageEntry,
+  CoverageItem,
+  CoverageModel,
+  createEmptyCoverageEntry,
+  meetsThreshold,
+  parseCoverageModel,
+} from "./coverage.model"
+
 declare var danger: DangerDSLType
 import * as _ from "lodash"
 import * as path from "path"
@@ -9,79 +27,6 @@ export declare function message(message: string): void
 export declare function warn(message: string): void
 export declare function fail(message: string): void
 export declare function markdown(message: string): void
-
-export type ReportChangeType = "created" | "modified" | "createdOrModified" | "all"
-export type ReportMode = "fail" | "warn" | "message"
-export interface CoverageThreshold {
-  statements: number,
-  branches: number,
-  functions: number,
-  lines: number,
-}
-
-export interface KarmaInstanbulConfig {
-  coveragePath: string,
-  reportChangeType: ReportChangeType,
-  threshold: CoverageThreshold,
-  reportMode: ReportMode
-}
-
-interface CoverageItem {
-  total: number,
-  covered: number,
-  skipped: number,
-  pct: number
-}
-
-interface CoverageEntry {
-  lines: CoverageItem,
-  functions: CoverageItem,
-  statements: CoverageItem,
-  branches: CoverageItem,
-}
-
-interface CoverageModel {
-  "total": CoverageEntry,
-  [key: string]: CoverageEntry,
-}
-
-function parseCoverageModel(coveragePath: string): CoverageModel | undefined {
-  const resolvedPath = path.resolve(__dirname, coveragePath)
-  const filesystem = new FilesystemService()
-  const emptyMessage = `Coverage data had invalid formatting at path '${resolvedPath}'`
-
-  if (!filesystem.exists(resolvedPath)) {
-    warn(`Couldn't find instanbul coverage json file at path '${resolvedPath}'.`)
-    return undefined
-  }
-
-  try {
-    const json = JSON.parse(filesystem.read(resolvedPath))
-    if (Object.keys(json).length === 0) {
-      // Don't output anything if there is no coverage data.
-      return undefined
-    }
-    return json as CoverageModel
-  } catch (error) {
-    warn(emptyMessage)
-    return
-  }
-}
-
-function makeCompleteConfiguration(config?: Partial<KarmaInstanbulConfig>): KarmaInstanbulConfig {
-  const defaults: KarmaInstanbulConfig = {
-    coveragePath: "./coverage/coverage-final.json",
-    reportChangeType: "all",
-    reportMode: "message",
-    threshold: {
-      statements: 100,
-      branches: 100,
-      functions: 100,
-      lines: 100,
-    },
-  }
-  return config ? { ... defaults, ... config } : defaults
-}
 
 function filterForCoveredFiles(files: string[], coverage: CoverageModel): string[] {
   return files
@@ -106,33 +51,6 @@ function getFileSet(
     return _.union(created, modified)
 }
 
-function meetsThreshold(entry: CoverageEntry, threshold: CoverageThreshold) {
-  return entry.lines.pct >= threshold.lines
-    && entry.functions.pct >= threshold.functions
-    && entry.branches.pct >= threshold.branches
-    && entry.statements.pct >= threshold.statements
-}
-
-function combineItems(first: CoverageItem, second: CoverageItem): CoverageItem {
-  const percentage = (second.total + first.total) > 0 ?
-    (first.pct * second.total + second.pct * first.total) / (second.total + first.total) : 0
-  return {
-    total: first.total + second.total,
-    covered: first.covered + second.covered,
-    skipped: first.skipped + second.skipped,
-    pct: percentage,
-  }
-}
-
-function combineEntries(first: CoverageEntry, second: CoverageEntry): CoverageEntry {
-  return {
-    lines: combineItems(first.lines, second.lines),
-    statements: combineItems(first.statements, second.statements),
-    branches: combineItems(first.branches, second.branches),
-    functions: combineItems(first.functions, second.functions),
-  }
-}
-
 function getReportFunc(reportMode: ReportMode) {
   if (reportMode === "warn") { return warn }
   if (reportMode === "fail") { return fail }
@@ -141,9 +59,9 @@ function getReportFunc(reportMode: ReportMode) {
 
 function getFileGroupLongDescription(reportChangeType: ReportChangeType) {
   if (reportChangeType === "all") { return "the whole codebase" }
-  if (reportChangeType === "created") { return "these new files" }
-  if (reportChangeType === "modified") { return "these modified files" }
-  return "these modified or changed files"
+  if (reportChangeType === "created") { return "the new files in this PR" }
+  if (reportChangeType === "modified") { return "the modified files in this PR" }
+  return "the modified or changed files in this PR"
 }
 
 function getFileGroupShortDescription(reportChangeType: ReportChangeType) {
@@ -151,6 +69,16 @@ function getFileGroupShortDescription(reportChangeType: ReportChangeType) {
   if (reportChangeType === "created") { return "New Files" }
   if (reportChangeType === "modified") { return "Modified Files" }
   return "Created or Modified Files"
+}
+
+function sendPRComment(config: KarmaInstanbulConfig, results: CoverageEntry) {
+  const reportFunc = getReportFunc(config.reportMode)
+  const messageType = getFileGroupLongDescription(config.reportChangeType)
+  if (!meetsThreshold(results, config.threshold)) {
+    reportFunc(`🤔 Hmmm, code coverage is looking low for ${messageType}.`)
+  } else {
+    message(`🎉 Test coverage is looking good for ${messageType}`)
+  }
 }
 
 function formatItem(item: CoverageItem) {
@@ -188,10 +116,16 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
 
   const combinedConfig = makeCompleteConfiguration(config)
-  const reportFunc = getReportFunc(combinedConfig.reportMode)
 
-  const coverage = parseCoverageModel(combinedConfig.coveragePath)
-  if (!coverage) { return }
+  let coverage: CoverageModel
+  try {
+    const parsedCoverage = parseCoverageModel(combinedConfig.coveragePath)
+    if (!parsedCoverage) { return }
+    coverage = parsedCoverage
+  } catch (error) {
+    warn(error)
+    return
+  }
 
   const modifiedFiles = filterForCoveredFiles(danger.git.modified_files, coverage)
   const createdFiles = filterForCoveredFiles(danger.git.created_files, coverage)
@@ -202,30 +136,18 @@ export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
 
   if (files.length === 0) { return }
 
-  const coverageEntries: { [key: string]: CoverageEntry} = files
+  const coverageEntries = files
     .reduce((current, file) => {
       const copy = {... current }
       copy[file] = coverage[file]
       return copy
     }, {})
 
-  const emptyCoverageEntry: CoverageEntry = {
-    lines: { total: 0, covered: 0, skipped: 0, pct: 0 },
-    statements: { total: 0, covered: 0, skipped: 0, pct: 0 },
-    functions: { total: 0, covered: 0, skipped: 0, pct: 0 },
-    branches: { total: 0, covered: 0, skipped: 0, pct: 0 },
-  }
   const results = Object
     .keys(coverageEntries)
-    .reduce((entry, filename) => combineEntries(entry, coverageEntries[filename]), emptyCoverageEntry)
+    .reduce((entry, filename) => combineEntries(entry, coverageEntries[filename]), createEmptyCoverageEntry())
 
-  const messageType = getFileGroupLongDescription(combinedConfig.reportChangeType)
-  if (!meetsThreshold(results, combinedConfig.threshold)) {
-    reportFunc(`🤔 Hmmm, code coverage is looking low for ${messageType}.`)
-  } else {
-    message(`🎉 Test coverage is looking good for ${messageType}`)
-  }
-
+  sendPRComment(combinedConfig, results)
   const report = generateReport({... coverageEntries, total: results}, combinedConfig.reportChangeType)
   markdown(report)
 }
