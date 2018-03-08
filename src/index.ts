@@ -89,7 +89,7 @@ function generateReport(coverage: CoverageModel, reportChangeType: ReportChangeT
 
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------- | ------------------ | ----------------- | ---------------
+---- | ------------: | -----------------: | ----------------: | --------------:
 `
   const lines = Object
     .keys(coverage)
@@ -107,7 +107,14 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
       ].join(" | ")
     })
     .join("\n")
-  return `${header}${lines}\n`
+  const total = [
+    "Total",
+    formatItem(coverage.total.lines),
+    formatItem(coverage.total.statements),
+    formatItem(coverage.total.functions),
+    formatItem(coverage.total.branches),
+  ].join(" | ")
+  return `${header}${lines}\n${total}\n`
 }
 
 /**
