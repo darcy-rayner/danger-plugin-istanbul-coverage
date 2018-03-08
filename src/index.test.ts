@@ -1,6 +1,6 @@
 import * as path from "path"
 import FilesystemService from "./filesystem.service"
-import { karmaInstanbul, KarmaInstanbulConfig } from "./index"
+import { karmaInstanbul } from "./index"
 jest.mock("./filesystem.service")
 
 declare const global: any
