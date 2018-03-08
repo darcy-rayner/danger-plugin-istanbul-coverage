@@ -216,4 +216,20 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
     })
     expect(global.warn).toBeCalled()
   })
+
+  it("escapes filenames with '|,(,),[,],#,*>' characters", () => {
+    setupCoverageFile(`{
+      ${makeEntry(`${__dirname}/src/file-with-characters[(|#*)].ts`, 25, 25, 25, 25)}
+    }`)
+    karmaInstanbul()
+    const expectedFilename = `src/file-with-characters\\[\\(\\|\\#\\*\\)\\].ts`
+    expect(global.markdown).toHaveBeenCalledWith(
+`## Coverage in All Files
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------: | -----------------: | ----------------: | --------------:
+[${expectedFilename}](${expectedFilename}) | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+Total | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+`,
+    )
+  })
 })

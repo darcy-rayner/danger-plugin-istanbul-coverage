@@ -85,6 +85,13 @@ function formatItem(item: CoverageItem) {
   return `(${item.covered}/${item.total}) ${item.pct.toFixed(0)}%`
 }
 
+function formatSourceName(source: string) {
+  const escapedCharacters = ["|", "(", ")", "[", "]", "#", "*"]
+  return [...source]
+    .map(c => _.includes(escapedCharacters, c) ? `\\${c}` : c)
+    .join("")
+}
+
 function generateReport(coverage: CoverageModel, reportChangeType: ReportChangeType) {
 
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
@@ -97,7 +104,7 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
     .sort( (a, b) => a.localeCompare(b, "en-US") )
     .map( filename => {
       const e = coverage[filename]
-      const shortFilename = path.relative(__dirname, filename)
+      const shortFilename = formatSourceName(path.relative(__dirname, filename))
       return [
         `[${shortFilename}](${shortFilename})`,
         formatItem(e.lines),
