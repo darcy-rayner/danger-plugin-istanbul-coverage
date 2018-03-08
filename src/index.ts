@@ -134,14 +134,10 @@ export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
   let coverage: CoverageModel
   try {
     const parsedCoverage = parseCoverageModel(combinedConfig.coveragePath)
-    if (!parsedCoverage) {
-      console.log("A")
-      return
-    }
+    if (!parsedCoverage) { return }
     coverage = parsedCoverage
   } catch (error) {
     warn(error)
-    console.log("B")
     return
   }
 
