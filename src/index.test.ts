@@ -212,6 +212,13 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   it("outputs a warning when it can't find the coverage file", () => {
     setupCoverageFile(undefined)
     karmaInstanbul({
+      reportMode: "warn",
+    })
+    expect(global.warn).toBeCalled()
+  })
+  it("outputs a warning when coverage file is invalidly formatted", () => {
+    setupCoverageFile("{")
+    karmaInstanbul({
       reportMode: "fail",
     })
     expect(global.warn).toBeCalled()
