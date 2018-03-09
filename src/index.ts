@@ -71,9 +71,9 @@ function getFileGroupShortDescription(reportChangeType: ReportFileSet) {
   return "Created or Modified Files"
 }
 
-function sendPRComment(config: KarmaInstanbulConfig, results: CoverageEntry) {
+function sendPRComment(config: Config, results: CoverageEntry) {
   const reportFunc = getReportFunc(config.reportMode)
-  const messageType = getFileGroupLongDescription(config.reportChangeType)
+  const messageType = getFileGroupLongDescription(config.reportFileSet)
   if (!meetsThreshold(results, config.threshold)) {
     reportFunc(`🤔 Hmmm, code coverage is looking low for ${messageType}.`)
   } else {
