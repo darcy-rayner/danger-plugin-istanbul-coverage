@@ -7,16 +7,16 @@ export interface CoverageThreshold {
   lines: number,
 }
 
-export interface KarmaInstanbulConfig {
+export interface Config {
   coveragePath: string,
   reportChangeType: ReportChangeType,
   threshold: CoverageThreshold,
   reportMode: ReportMode
 }
 
-export function makeCompleteConfiguration(config?: Partial<KarmaInstanbulConfig>): KarmaInstanbulConfig {
-    const defaults: KarmaInstanbulConfig = {
-      coveragePath: "./coverage/coverage-final.json",
+export function makeCompleteConfiguration(config?: Partial<Config>): Config {
+    const defaults: Config = {
+      coveragePath: "./coverage/coverage-summary.json",
       reportChangeType: "all",
       reportMode: "message",
       threshold: {

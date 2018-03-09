@@ -1,8 +1,8 @@
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 import { DangerDSLType } from "../node_modules/danger/distribution/dsl/DangerDSL"
 import {
+  Config,
   CoverageThreshold,
-  KarmaInstanbulConfig,
   makeCompleteConfiguration,
   ReportChangeType,
   ReportMode,
@@ -127,7 +127,7 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 /**
  * Danger.js plugin for monitoring code coverage on changed files.
  */
-export function karmaInstanbul(config?: Partial<KarmaInstanbulConfig>) {
+export function istanbulCoverage(config?: Partial<Config>) {
 
   const combinedConfig = makeCompleteConfiguration(config)
 

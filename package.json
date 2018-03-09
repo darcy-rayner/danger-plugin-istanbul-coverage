@@ -1,18 +1,18 @@
 {
-  "name": "danger-plugin-karma-instanbul",
-  "description": "Danger.js plugin for monitoring code coverage on changed files.",
+  "name": "danger-plugin-istanbul-coverage",
+  "description": "Danger.js plugin for monitoring istanbul code coverage on changed files using.",
   "author": {
     "name": "Darcy Rayner",
     "email": "darcy@two-bulls.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DarcyRayner/danger-plugin-karma-instanbul.git"
+    "url": "https://github.com/DarcyRayner/danger-plugin-istanbul-coverage.git"
   },
   "bugs": {
-    "url": "https://github.com/DarcyRayner/danger-plugin-karma-instanbul/issues"
+    "url": "https://github.com/DarcyRayner/danger-plugin-istanbul-coverage/issues"
   },
-  "homepage": "https://github.com/DarcyRayner/danger-plugin-karma-instanbul#readme",
+  "homepage": "https://github.com/DarcyRayner/danger-plugin-istanbul-coverage#readme",
   "keywords": [
     "danger",
     "danger-plugin",
@@ -81,13 +81,17 @@
       "tsx",
       "js"
     ],
+    "coverageReporters": [
+      "json-summary"
+    ],
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(.test)\\.(ts|tsx)$",
     "testPathIgnorePatterns": [
       "\\.snap$",
-      "<rootDir>/node_modules/"
+      "<rootDir>/node_modules/",
+      "src/filesystem.service.ts"
     ]
   },
   "dependencies": {

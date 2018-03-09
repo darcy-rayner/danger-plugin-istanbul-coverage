@@ -1,6 +1,6 @@
 import * as path from "path"
 import FilesystemService from "./filesystem.service"
-import { karmaInstanbul } from "./index"
+import { istanbulCoverage } from "./index"
 jest.mock("./filesystem.service")
 
 declare const global: any
@@ -39,7 +39,7 @@ function setupCoverageFile(coverage?: string) {
   })
 }
 
-describe("karmaInstanbul()", () => {
+describe("istanbulCoverage()", () => {
 
   beforeEach(() => {
     global.warn = jest.fn()
@@ -77,7 +77,7 @@ describe("karmaInstanbul()", () => {
   })
 
   it("will only report on new files when reportChangeType is set to \"created\"", () => {
-    karmaInstanbul({
+    istanbulCoverage({
       reportChangeType: "created",
     })
     expect(global.markdown).toHaveBeenCalledWith(
@@ -92,7 +92,7 @@ Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
   })
 
   it("will only report on modified files when reportChangeType is set to \"modified\"", () => {
-    karmaInstanbul({
+    istanbulCoverage({
       reportChangeType: "modified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
@@ -106,7 +106,7 @@ Total | (165/200) 83% | (75/200) 38% | (100/200) 50% | (75/200) 38%
     )
   })
   it("will only report on created and modified files when reportChangeType is set to \"createdOrModified\"", () => {
-    karmaInstanbul({
+    istanbulCoverage({
       reportChangeType: "createdOrModified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
@@ -123,7 +123,7 @@ Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
   })
 
   it("will report all files when reportChangeType is set to \"all\"", () => {
-    karmaInstanbul({
+    istanbulCoverage({
       reportChangeType: "all",
     })
     expect(global.markdown).toHaveBeenCalledWith(
@@ -141,14 +141,14 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   })
 
   it("fails the build when reportMode is set to FAIL and coverage is below threshold", () => {
-    karmaInstanbul({
+    istanbulCoverage({
       reportMode: "fail",
     })
     expect(global.fail).toBeCalled()
   })
 
   it("passes the build when reportMode is set to FAIL and coverage is above threshold", () => {
-    karmaInstanbul({
+    istanbulCoverage({
       reportMode: "fail",
       threshold: {
         lines: 25,
@@ -161,14 +161,14 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   })
 
   it("warns the build when reportMode is set to WARN and coverage is below threshold", () => {
-    karmaInstanbul({
+    istanbulCoverage({
       reportMode: "warn",
     })
     expect(global.warn).toBeCalled()
   })
 
   it("passes the build when reportMode is set to WARN and coverage is above threshold", () => {
-    karmaInstanbul({
+    istanbulCoverage({
       reportMode: "warn",
       threshold: {
         lines: 25,
@@ -181,7 +181,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   })
   it("doesn't output anything when reportChangeType is set to \"created\" and there are no created files ", () => {
     global.danger.git.created_files = []
-    karmaInstanbul({
+    istanbulCoverage({
       reportMode: "fail",
       reportChangeType: "created",
     })
@@ -192,7 +192,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
 
   it("doesn't output anything when reportChangeType is set to \"modified\" and there are no modified files ", () => {
     global.danger.git.modified_files = []
-    karmaInstanbul({
+    istanbulCoverage({
       reportMode: "fail",
       reportChangeType: "modified",
     })
@@ -202,7 +202,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   })
   it("doesn't output anything when the coverage data is empty", () => {
     setupCoverageFile("{}")
-    karmaInstanbul({
+    istanbulCoverage({
       reportMode: "fail",
     })
     expect(global.fail).not.toBeCalled()
@@ -211,14 +211,14 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   })
   it("outputs a warning when it can't find the coverage file", () => {
     setupCoverageFile(undefined)
-    karmaInstanbul({
+    istanbulCoverage({
       reportMode: "warn",
     })
     expect(global.warn).toBeCalled()
   })
   it("outputs a warning when coverage file is invalidly formatted", () => {
     setupCoverageFile("{")
-    karmaInstanbul({
+    istanbulCoverage({
       reportMode: "fail",
     })
     expect(global.warn).toBeCalled()
@@ -230,7 +230,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
     setupCoverageFile(`{
       ${makeEntry(`${__dirname}/src/file-with-characters{[(|#*-+_!\`)]}.ts`, 25, 25, 25, 25)}
     }`)
-    karmaInstanbul()
+    istanbulCoverage()
     const expectedFilename = `src/file\\-with\\-characters\\{\\[\\(\\|\\#\\*\\-\\+\\_\\!\\\`\\)\\]\\}.ts`
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in All Files
