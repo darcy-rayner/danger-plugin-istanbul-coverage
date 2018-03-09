@@ -4,7 +4,7 @@ import {
   Config,
   CoverageThreshold,
   makeCompleteConfiguration,
-  ReportChangeType,
+  ReportFileSet,
   ReportMode,
 } from "./config.model"
 import {
@@ -35,7 +35,7 @@ function filterForCoveredFiles(files: string[], coverage: CoverageModel): string
 }
 
 function getFileSet(
-  reportChangeType: ReportChangeType,
+  reportChangeType: ReportFileSet,
   all: string[],
   modified: string[],
   created: string[]): string[] {
@@ -57,14 +57,14 @@ function getReportFunc(reportMode: ReportMode) {
   return message
 }
 
-function getFileGroupLongDescription(reportChangeType: ReportChangeType) {
+function getFileGroupLongDescription(reportChangeType: ReportFileSet) {
   if (reportChangeType === "all") { return "the whole codebase" }
   if (reportChangeType === "created") { return "the new files in this PR" }
   if (reportChangeType === "modified") { return "the modified files in this PR" }
   return "the modified or changed files in this PR"
 }
 
-function getFileGroupShortDescription(reportChangeType: ReportChangeType) {
+function getFileGroupShortDescription(reportChangeType: ReportFileSet) {
   if (reportChangeType === "all") { return "All Files" }
   if (reportChangeType === "created") { return "New Files" }
   if (reportChangeType === "modified") { return "Modified Files" }
@@ -92,7 +92,7 @@ function formatSourceName(source: string) {
     .join("")
 }
 
-function generateReport(coverage: CoverageModel, reportChangeType: ReportChangeType) {
+function generateReport(coverage: CoverageModel, reportChangeType: ReportFileSet) {
 
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
@@ -146,7 +146,7 @@ export function istanbulCoverage(config?: Partial<Config>) {
   const allFiles =  Object.keys(coverage)
     .filter( filename => filename !== "total")
 
-  const files = getFileSet(combinedConfig.reportChangeType, allFiles, modifiedFiles, createdFiles)
+  const files = getFileSet(combinedConfig.reportFileSet, allFiles, modifiedFiles, createdFiles)
 
   if (files.length === 0) { return }
 
@@ -162,6 +162,6 @@ export function istanbulCoverage(config?: Partial<Config>) {
     .reduce((entry, filename) => combineEntries(entry, coverageEntries[filename]), createEmptyCoverageEntry())
 
   sendPRComment(combinedConfig, results)
-  const report = generateReport({... coverageEntries, total: results}, combinedConfig.reportChangeType)
+  const report = generateReport({... coverageEntries, total: results}, combinedConfig.reportFileSet)
   markdown(report)
 }

@@ -1,4 +1,4 @@
-export type ReportChangeType = "created" | "modified" | "createdOrModified" | "all"
+export type ReportFileSet = "created" | "modified" | "createdOrModified" | "all"
 export type ReportMode = "fail" | "warn" | "message"
 export interface CoverageThreshold {
   statements: number,
@@ -9,7 +9,7 @@ export interface CoverageThreshold {
 
 export interface Config {
   coveragePath: string,
-  reportChangeType: ReportChangeType,
+  reportFileSet: ReportFileSet,
   threshold: CoverageThreshold,
   reportMode: ReportMode
 }
@@ -17,7 +17,7 @@ export interface Config {
 export function makeCompleteConfiguration(config?: Partial<Config>): Config {
     const defaults: Config = {
       coveragePath: "./coverage/coverage-summary.json",
-      reportChangeType: "all",
+      reportFileSet: "all",
       reportMode: "message",
       threshold: {
         statements: 100,

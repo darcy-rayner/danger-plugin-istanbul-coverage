@@ -76,9 +76,9 @@ describe("istanbulCoverage()", () => {
     jest.resetAllMocks()
   })
 
-  it("will only report on new files when reportChangeType is set to \"created\"", () => {
+  it("will only report on new files when reportFileSet is set to \"created\"", () => {
     istanbulCoverage({
-      reportChangeType: "created",
+      reportFileSet: "created",
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in New Files
@@ -91,9 +91,9 @@ Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
     )
   })
 
-  it("will only report on modified files when reportChangeType is set to \"modified\"", () => {
+  it("will only report on modified files when reportFileSet is set to \"modified\"", () => {
     istanbulCoverage({
-      reportChangeType: "modified",
+      reportFileSet: "modified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in Modified Files
@@ -105,9 +105,9 @@ Total | (165/200) 83% | (75/200) 38% | (100/200) 50% | (75/200) 38%
 `,
     )
   })
-  it("will only report on created and modified files when reportChangeType is set to \"createdOrModified\"", () => {
+  it("will only report on created and modified files when reportFileSet is set to \"createdOrModified\"", () => {
     istanbulCoverage({
-      reportChangeType: "createdOrModified",
+      reportFileSet: "createdOrModified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in Created or Modified Files
@@ -122,9 +122,9 @@ Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
     )
   })
 
-  it("will report all files when reportChangeType is set to \"all\"", () => {
+  it("will report all files when reportFileSet is set to \"all\"", () => {
     istanbulCoverage({
-      reportChangeType: "all",
+      reportFileSet: "all",
     })
     expect(global.markdown).toHaveBeenCalledWith(
 `## Coverage in All Files
@@ -179,22 +179,22 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
     })
     expect(global.warn).not.toBeCalled()
   })
-  it("doesn't output anything when reportChangeType is set to \"created\" and there are no created files ", () => {
+  it("doesn't output anything when reportFileSet is set to \"created\" and there are no created files ", () => {
     global.danger.git.created_files = []
     istanbulCoverage({
       reportMode: "fail",
-      reportChangeType: "created",
+      reportFileSet: "created",
     })
     expect(global.fail).not.toBeCalled()
     expect(global.warn).not.toBeCalled()
     expect(global.message).not.toBeCalled()
   })
 
-  it("doesn't output anything when reportChangeType is set to \"modified\" and there are no modified files ", () => {
+  it("doesn't output anything when reportFileSet is set to \"modified\" and there are no modified files ", () => {
     global.danger.git.modified_files = []
     istanbulCoverage({
       reportMode: "fail",
-      reportChangeType: "modified",
+      reportFileSet: "modified",
     })
     expect(global.fail).not.toBeCalled()
     expect(global.warn).not.toBeCalled()

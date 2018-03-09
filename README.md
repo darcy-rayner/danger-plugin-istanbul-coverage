@@ -6,6 +6,7 @@
 
 > Danger.js plugin for monitoring code coverage on changed files.
 
+
 ## Usage
 
 Install:
@@ -25,20 +26,21 @@ istanbulCoverage() // Use default configuration
 istanbulCoverage({
   // The location of the istanbul coverage file.
   coveragePath: "./coverage/coverage-summary.json",
-  // Which set of files to report from the coverage file.
-  reportChangeType: "all", // || "modified" || "created" || "createdOrModified"
-  // What to do when the PR doesn't meet the minimum coverage threshold
+  // Which set of files to summarise from the coverage file.
+  reportFileSet: "all", // || "modified" || "created" || "createdOrModified"
+  // What to do when the PR doesn't meet the minimum code coverage threshold
   reportMode: "message", // || "warn" || "fail"
+  // Minimum coverage threshold percentages. Compared against the cumulative coverage of the reportFileSet. 
   threshold: {
     statements: 100,
     branches: 100,
     functions: 100,
     lines: 100,
-    },
+  }
 })
 ```
 
-This plugin requires the 'json-summary' report mode be enabled with Istanbul.
+This plugin requires the 'json-summary' report mode be enabled with Istanbul. Make sure Danger runs after your unit tests in your CI workflow.
 
 ## Changelog
 
