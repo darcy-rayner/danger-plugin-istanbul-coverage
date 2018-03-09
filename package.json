@@ -3,20 +3,22 @@
   "description": "Danger.js plugin for monitoring istanbul code coverage on changed files using.",
   "author": {
     "name": "Darcy Rayner",
-    "email": "darcy@two-bulls.com"
+    "email": "darcy.rayner@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/DarcyRayner/danger-plugin-istanbul-coverage.git"
+    "url": "https://github.com/darcy-rayner/danger-plugin-istanbul-coverage.git"
   },
   "bugs": {
-    "url": "https://github.com/DarcyRayner/danger-plugin-istanbul-coverage/issues"
+    "url": "https://github.com/darcy-rayner/danger-plugin-istanbul-coverage/issues"
   },
-  "homepage": "https://github.com/DarcyRayner/danger-plugin-istanbul-coverage#readme",
+  "homepage": "https://github.com/darcy-rayner/danger-plugin-istanbul-coverage#readme",
   "keywords": [
     "danger",
     "danger-plugin",
-    "Y"
+    "istanbul",
+    "coverage",
+    "testing"
   ],
   "version": "0.0.0-development",
   "main": "dist/index.js",
