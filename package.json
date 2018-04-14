@@ -22,7 +22,7 @@
   ],
   "version": "0.1.0",
   "main": "dist/index.js",
-  "types": "types/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "precommit": "lint-staged",
     "commit": "git-cz",
