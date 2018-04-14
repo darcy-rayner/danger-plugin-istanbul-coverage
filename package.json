@@ -1,6 +1,6 @@
 {
   "name": "danger-plugin-istanbul-coverage",
-  "description": "Danger.js plugin for monitoring istanbul code coverage on changed files using.",
+  "description": "Danger.js plugin for monitoring istanbul code coverage on changed files.",
   "author": {
     "name": "Darcy Rayner",
     "email": "darcy.rayner@gmail.com"
