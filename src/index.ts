@@ -1,12 +1,6 @@
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 import { DangerDSLType } from "../node_modules/danger/distribution/dsl/DangerDSL"
-import {
-  Config,
-  CoverageThreshold,
-  makeCompleteConfiguration,
-  ReportFileSet,
-  ReportMode,
-} from "./config.model"
+import { Config, CoverageThreshold, makeCompleteConfiguration, ReportFileSet, ReportMode } from "./config.model"
 import {
   combineEntries,
   combineItems,
@@ -29,45 +23,55 @@ export declare function fail(message: string): void
 export declare function markdown(message: string): void
 
 function filterForCoveredFiles(files: string[], coverage: CoverageModel): string[] {
-  return files
-    .map( (filename) => path.resolve(__dirname, filename) )
-    .filter( filename => coverage[filename] !== undefined)
+  return files.map(filename => path.resolve(__dirname, filename)).filter(filename => coverage[filename] !== undefined)
 }
 
-function getFileSet(
-  reportChangeType: ReportFileSet,
-  all: string[],
-  modified: string[],
-  created: string[]): string[] {
-    if (reportChangeType === "all") {
-      return all
-    }
-    if (reportChangeType === "modified") {
-      return modified
-    }
-    if (reportChangeType === "created") {
-      return created
-    }
-    return _.union(created, modified)
+function getFileSet(reportChangeType: ReportFileSet, all: string[], modified: string[], created: string[]): string[] {
+  if (reportChangeType === "all") {
+    return all
+  }
+  if (reportChangeType === "modified") {
+    return modified
+  }
+  if (reportChangeType === "created") {
+    return created
+  }
+  return _.union(created, modified)
 }
 
 function getReportFunc(reportMode: ReportMode) {
-  if (reportMode === "warn") { return warn }
-  if (reportMode === "fail") { return fail }
+  if (reportMode === "warn") {
+    return warn
+  }
+  if (reportMode === "fail") {
+    return fail
+  }
   return message
 }
 
 function getFileGroupLongDescription(reportChangeType: ReportFileSet) {
-  if (reportChangeType === "all") { return "the whole codebase" }
-  if (reportChangeType === "created") { return "the new files in this PR" }
-  if (reportChangeType === "modified") { return "the modified files in this PR" }
+  if (reportChangeType === "all") {
+    return "the whole codebase"
+  }
+  if (reportChangeType === "created") {
+    return "the new files in this PR"
+  }
+  if (reportChangeType === "modified") {
+    return "the modified files in this PR"
+  }
   return "the modified or changed files in this PR"
 }
 
 function getFileGroupShortDescription(reportChangeType: ReportFileSet) {
-  if (reportChangeType === "all") { return "All Files" }
-  if (reportChangeType === "created") { return "New Files" }
-  if (reportChangeType === "modified") { return "Modified Files" }
+  if (reportChangeType === "all") {
+    return "All Files"
+  }
+  if (reportChangeType === "created") {
+    return "New Files"
+  }
+  if (reportChangeType === "modified") {
+    return "Modified Files"
+  }
   return "Created or Modified Files"
 }
 
@@ -87,22 +91,18 @@ function formatItem(item: CoverageItem) {
 
 function formatSourceName(source: string) {
   const escapedCharacters = ["|", "(", ")", "[", "]", "#", "*", "{", "}", "-", "+", "_", "!", "\\", "`"]
-  return [...source]
-    .map(c => _.includes(escapedCharacters, c) ? `\\${c}` : c)
-    .join("")
+  return [...source].map(c => (_.includes(escapedCharacters, c) ? `\\${c}` : c)).join("")
 }
 
 function generateReport(coverage: CoverageModel, reportChangeType: ReportFileSet) {
-
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 `
-  const lines = Object
-    .keys(coverage)
+  const lines = Object.keys(coverage)
     .filter(filename => filename !== "total")
-    .sort( (a, b) => a.localeCompare(b, "en-US") )
-    .map( filename => {
+    .sort((a, b) => a.localeCompare(b, "en-US"))
+    .map(filename => {
       const e = coverage[filename]
       const shortFilename = formatSourceName(path.relative(__dirname, filename))
       return [
@@ -128,40 +128,48 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
  * Danger.js plugin for monitoring code coverage on changed files.
  */
 export function istanbulCoverage(config?: Partial<Config>) {
-
   const combinedConfig = makeCompleteConfiguration(config)
+
+  let coveragePath = combinedConfig.coveragePath
+  if (require.main) {
+    const appDir = path.dirname(require.main.filename)
+    coveragePath = path.relative(appDir, combinedConfig.coveragePath)
+  }
 
   let coverage: CoverageModel
   try {
-    const parsedCoverage = parseCoverageModel(combinedConfig.coveragePath)
-    if (!parsedCoverage) { return }
+    const parsedCoverage = parseCoverageModel(coveragePath)
+    if (!parsedCoverage) {
+      return
+    }
     coverage = parsedCoverage
   } catch (error) {
-    warn(error)
+    warn(error.message)
     return
   }
 
   const modifiedFiles = filterForCoveredFiles(danger.git.modified_files, coverage)
   const createdFiles = filterForCoveredFiles(danger.git.created_files, coverage)
-  const allFiles =  Object.keys(coverage)
-    .filter( filename => filename !== "total")
+  const allFiles = Object.keys(coverage).filter(filename => filename !== "total")
 
   const files = getFileSet(combinedConfig.reportFileSet, allFiles, modifiedFiles, createdFiles)
 
-  if (files.length === 0) { return }
+  if (files.length === 0) {
+    return
+  }
 
-  const coverageEntries = files
-    .reduce((current, file) => {
-      const copy = {... current }
-      copy[file] = coverage[file]
-      return copy
-    }, {})
+  const coverageEntries = files.reduce((current, file) => {
+    const copy = { ...current }
+    copy[file] = coverage[file]
+    return copy
+  }, {})
 
-  const results = Object
-    .keys(coverageEntries)
-    .reduce((entry, filename) => combineEntries(entry, coverageEntries[filename]), createEmptyCoverageEntry())
+  const results = Object.keys(coverageEntries).reduce(
+    (entry, filename) => combineEntries(entry, coverageEntries[filename]),
+    createEmptyCoverageEntry()
+  )
 
   sendPRComment(combinedConfig, results)
-  const report = generateReport({... coverageEntries, total: results}, combinedConfig.reportFileSet)
+  const report = generateReport({ ...coverageEntries, total: results }, combinedConfig.reportFileSet)
   markdown(report)
 }
