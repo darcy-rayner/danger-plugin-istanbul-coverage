@@ -90,11 +90,15 @@ function formatItem(item: CoverageItem) {
   return `(${item.covered}/${item.total}) ${item.pct.toFixed(0)}%`
 }
 
-function formatSourceName(source: string) {
+function formatSourceName(source: string): string {
   return escapeMarkdownCharacters(getPrettyPathName(source, 30))
 }
 
-function generateReport(basePath: string, coverage: CoverageModel, reportChangeType: ReportFileSet) {
+function formatLinkName(source: string, branchName: string): string {
+  return escapeMarkdownCharacters(`../blob/${branchName}/${source}`)
+}
+
+function generateReport(basePath: string, branch: string, coverage: CoverageModel, reportChangeType: ReportFileSet) {
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
@@ -106,7 +110,7 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
     .map(filename => {
       const e = coverage[filename]
       const shortFilename = formatSourceName(path.relative(basePath, filename))
-      const linkFilename = escapeMarkdownCharacters(path.relative(basePath, filename))
+      const linkFilename = formatLinkName(path.relative(basePath, filename), branch)
       return [
         `[${shortFilename}](${linkFilename})`,
         formatItem(e.lines),
@@ -150,7 +154,12 @@ export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
     return Promise.resolve()
   }
   const gitService = new GitService()
-  return gitService.getRootDirectory().then(gitRoot => {
+
+  const promise = Promise.all([gitService.getRootDirectory(), gitService.getCurrentBranch()])
+
+  return promise.then(values => {
+    const gitRoot = values[0]
+    const gitBranch = values[1]
     const modifiedFiles = filterForCoveredFiles(gitRoot, danger.git.modified_files, coverage)
     const createdFiles = filterForCoveredFiles(gitRoot, danger.git.created_files, coverage)
     const allFiles = Object.keys(coverage).filter(filename => filename !== "total")
@@ -173,7 +182,8 @@ export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
     )
 
     sendPRComment(combinedConfig, results)
-    const report = generateReport(gitRoot, { ...coverageEntries, total: results }, combinedConfig.reportFileSet)
+    const coverageModel = { ...coverageEntries, total: results }
+    const report = generateReport(gitRoot, gitBranch, coverageModel, combinedConfig.reportFileSet)
     markdown(report)
   })
 }

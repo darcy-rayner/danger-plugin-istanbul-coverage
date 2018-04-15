@@ -63,9 +63,17 @@ export function parseGitRootPathOutput(stdout: string, seperator?: string): stri
   if (seperator === undefined) {
     seperator = path.sep
   }
-  stdout = stdout.replace(/[\r\n]*/g, "")
+  stdout = trimLineEnding(stdout)
   if (stdout.endsWith(seperator)) {
     return stdout
   }
   return `${stdout}${seperator}`
+}
+/**
+ * Trims the line endings from the end of a string
+ * @param input The string to cleanup
+ * @returns The string without line endings
+ */
+export function trimLineEnding(input: string): string {
+  return input.replace(/[\r\n]*/g, "")
 }

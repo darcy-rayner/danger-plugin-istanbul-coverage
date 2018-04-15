@@ -5,6 +5,8 @@ import { istanbulCoverage } from "./index"
 jest.mock("./filesystem.service")
 jest.mock("./git.service")
 
+/* tslint:disable max-line-length */
+
 declare const global: any
 
 const basePath = "/some/random/path/to/repo"
@@ -39,6 +41,7 @@ function setupGitService() {
   ;(GitService as any).mockImplementation(() => {
     return {
       getRootDirectory: () => Promise.resolve(__dirname),
+      getCurrentBranch: () => Promise.resolve("master"),
     }
   })
 }
@@ -93,8 +96,8 @@ describe("istanbulCoverage()", () => {
         `## Coverage in New Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
-[src/created\\-file1.ts](src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
-[src/created\\-file2.ts](src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created\\-file2.ts](../blob/master/src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
 Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
 `
       )
@@ -110,8 +113,8 @@ Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
         `## Coverage in Modified Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
-[src/modified\\-file1.ts](src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-[src/modified\\-file2.ts](src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
+[src/modified\\-file1.ts](../blob/master/src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified\\-file2.ts](../blob/master/src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 Total | (165/200) 83% | (75/200) 38% | (100/200) 50% | (75/200) 38%
 `
       )
@@ -126,10 +129,10 @@ Total | (165/200) 83% | (75/200) 38% | (100/200) 50% | (75/200) 38%
         `## Coverage in Created or Modified Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
-[src/created\\-file1.ts](src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
-[src/created\\-file2.ts](src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
-[src/modified\\-file1.ts](src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-[src/modified\\-file2.ts](src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
+[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created\\-file2.ts](../blob/master/src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/modified\\-file1.ts](../blob/master/src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified\\-file2.ts](../blob/master/src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
 `
       )
@@ -145,11 +148,11 @@ Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
         `## Coverage in All Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
-[src/created\\-file1.ts](src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
-[src/created\\-file2.ts](src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
-[src/modified\\-file1.ts](src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-[src/modified\\-file2.ts](src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
-[src/unmodified\\-field.ts](src/unmodified\\-field.ts) | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created\\-file2.ts](../blob/master/src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/modified\\-file1.ts](../blob/master/src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified\\-file2.ts](../blob/master/src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
+[src/unmodified\\-field.ts](../blob/master/src/unmodified\\-field.ts) | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
 `
       )

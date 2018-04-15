@@ -1,5 +1,5 @@
 import * as path from "path"
-import { escapeMarkdownCharacters, getPrettyPathName, parseGitRootPathOutput } from "./filename-utils"
+import { escapeMarkdownCharacters, getPrettyPathName, parseGitRootPathOutput, trimLineEnding } from "./filename-utils"
 
 describe("getPrettyPathName", () => {
   it("doesn't change strings equal to the limit", () => {
@@ -70,5 +70,16 @@ describe("normalizeGitRootOutput", () => {
   it("uses the platform native separator by default", () => {
     const output = parseGitRootPathOutput("a\n")
     expect(output).toEqual(`a${path.sep}`)
+  })
+})
+
+describe("trimLineEdings", () => {
+  it("removes newlines at end of string", () => {
+    const output = trimLineEnding("some random string \n")
+    expect(output).toEqual("some random string ")
+  })
+  it("removes windows style newlines at end of string", () => {
+    const output = trimLineEnding("another random string \r\n")
+    expect(output).toEqual("another random string ")
   })
 })
