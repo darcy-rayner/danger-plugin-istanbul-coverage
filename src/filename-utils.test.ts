@@ -1,5 +1,5 @@
 import * as path from "path"
-import { escapeMarkdownCharacters, getPrettyPathName, normalizeGitRootOutput } from "./filename-utils"
+import { escapeMarkdownCharacters, getPrettyPathName, parseGitRootPathOutput } from "./filename-utils"
 
 describe("getPrettyPathName", () => {
   it("doesn't change strings equal to the limit", () => {
@@ -50,25 +50,25 @@ describe("escapeMarkdownCharacters", () => {
 
 describe("normalizeGitRootOutput", () => {
   it("removes newlines at end of string", () => {
-    const output = normalizeGitRootOutput("/some/root/directory\n", "/")
+    const output = parseGitRootPathOutput("/some/root/directory\n", "/")
     expect(output).toEqual("/some/root/directory/")
   })
   it("removes windows style newlines at end of string", () => {
-    const output = normalizeGitRootOutput("\\some\\root\\directory \r\n", "\\")
+    const output = parseGitRootPathOutput("\\some\\root\\directory \r\n", "\\")
     expect(output).toEqual("\\some\\root\\directory \\")
   })
 
   it("preserves whitespace before newline", () => {
-    const output = normalizeGitRootOutput("/some/root/directory \n", "/")
+    const output = parseGitRootPathOutput("/some/root/directory \n", "/")
     expect(output).toEqual("/some/root/directory /")
   })
 
   it("won't concatenate a second path seperator ", () => {
-    const output = normalizeGitRootOutput("/some/root/directory/\n", "/")
+    const output = parseGitRootPathOutput("/some/root/directory/\n", "/")
     expect(output).toEqual("/some/root/directory/")
   })
   it("uses the platform native separator by default", () => {
-    const output = normalizeGitRootOutput("a\n")
+    const output = parseGitRootPathOutput("a\n")
     expect(output).toEqual(`a${path.sep}`)
   })
 })
