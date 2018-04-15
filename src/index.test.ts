@@ -207,6 +207,35 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
       done()
     })
   })
+
+  it("logs the custom success message if one is specified and coverage is above threshold", done => {
+    const customMessage = "This is the custom message"
+    istanbulCoverage({
+      reportMode: "message",
+      customSuccessMessage: customMessage,
+      threshold: {
+        lines: 25,
+        statements: 25,
+        functions: 25,
+        branches: 25,
+      },
+    }).then(() => {
+      expect(global.message).toBeCalledWith(customMessage)
+      done()
+    })
+  })
+
+  it("logs the custom failure message if one is specified and coverage is below threshold", done => {
+    const customMessage = "This is the custom message"
+    istanbulCoverage({
+      reportMode: "message",
+      customFailureMessage: customMessage,
+    }).then(() => {
+      expect(global.message).toBeCalledWith(customMessage)
+      done()
+    })
+  })
+
   it('doesn\'t output anything when reportFileSet is set to "created" and there are no created files ', done => {
     global.danger.git.created_files = []
     istanbulCoverage({
