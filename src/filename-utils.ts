@@ -51,3 +51,29 @@ export function escapeMarkdownCharacters(source: string) {
   const escapedCharacters = ["|", "(", ")", "[", "]", "#", "*", "{", "}", "-", "+", "_", "!", "\\", "`"]
   return [...source].map(c => (_.includes(escapedCharacters, c) ? `\\${c}` : c)).join("")
 }
+
+/**
+ * Parses the output from the git root directory command, removing newlines and adding a platform
+ * native separator.
+ * @param stdout The output to cleanup
+ * @param seperator The separator the path should end in. Defaults to platform native.
+ * @returns A cleaned up git root directory.
+ */
+export function parseGitRootPathOutput(stdout: string, seperator?: string): string {
+  if (seperator === undefined) {
+    seperator = path.sep
+  }
+  stdout = trimLineEnding(stdout)
+  if (stdout.endsWith(seperator)) {
+    return stdout
+  }
+  return `${stdout}${seperator}`
+}
+/**
+ * Trims the line endings from the end of a string
+ * @param input The string to cleanup
+ * @returns The string without line endings
+ */
+export function trimLineEnding(input: string): string {
+  return input.replace(/[\r\n]*/g, "")
+}

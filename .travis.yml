@@ -4,6 +4,10 @@ node_js:
   - "8"
   - "6"
 
+script:
+  - yarn test
+  - yarn danger ci
+
 after_success:
   - npm run semantic-release
 

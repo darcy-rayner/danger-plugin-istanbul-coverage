@@ -19,11 +19,12 @@ At a glance:
 
 ```js
 // dangerfile.js
-import istanbulCoverage from 'danger-plugin-istanbul-coverage'
+import { schedule } from "danger"
+import istanbulCoverage from "danger-plugin-istanbul-coverage"
 
-istanbulCoverage() // Use default configuration
+schedule(istanbulCoverage()) // Use default configuration
 
-istanbulCoverage({
+schedule(istanbulCoverage({
   // The location of the istanbul coverage file.
   coveragePath: "./coverage/coverage-summary.json",
   // Which set of files to summarise from the coverage file.
@@ -37,7 +38,7 @@ istanbulCoverage({
     functions: 100,
     lines: 100,
   }
-})
+}))
 ```
 
 This plugin requires the 'json-summary' report mode be enabled with Istanbul. Make sure Danger runs after your unit tests in your CI workflow.

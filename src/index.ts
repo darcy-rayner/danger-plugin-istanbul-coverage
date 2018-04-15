@@ -16,15 +16,15 @@ declare var danger: DangerDSLType
 import * as _ from "lodash"
 import * as path from "path"
 import { escapeMarkdownCharacters, getPrettyPathName } from "./filename-utils"
-import FilesystemService from "./filesystem.service"
+import { GitService } from "./git.service"
 
 export declare function message(message: string): void
 export declare function warn(message: string): void
 export declare function fail(message: string): void
 export declare function markdown(message: string): void
 
-function filterForCoveredFiles(files: string[], coverage: CoverageModel): string[] {
-  return files.map(filename => path.resolve(__dirname, filename)).filter(filename => coverage[filename] !== undefined)
+function filterForCoveredFiles(basePath: string, files: string[], coverage: CoverageModel): string[] {
+  return files.map(filename => path.resolve(basePath, filename)).filter(filename => coverage[filename] !== undefined)
 }
 
 function getFileSet(reportChangeType: ReportFileSet, all: string[], modified: string[], created: string[]): string[] {
@@ -90,22 +90,27 @@ function formatItem(item: CoverageItem) {
   return `(${item.covered}/${item.total}) ${item.pct.toFixed(0)}%`
 }
 
-function formatSourceName(source: string) {
+function formatSourceName(source: string): string {
   return escapeMarkdownCharacters(getPrettyPathName(source, 30))
 }
 
-function generateReport(coverage: CoverageModel, reportChangeType: ReportFileSet) {
+function formatLinkName(source: string, branchName: string): string {
+  return escapeMarkdownCharacters(`../blob/${branchName}/${source}`)
+}
+
+function generateReport(basePath: string, branch: string, coverage: CoverageModel, reportChangeType: ReportFileSet) {
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 `
+
   const lines = Object.keys(coverage)
     .filter(filename => filename !== "total")
     .sort((a, b) => a.localeCompare(b, "en-US"))
     .map(filename => {
       const e = coverage[filename]
-      const shortFilename = formatSourceName(path.relative(__dirname, filename))
-      const linkFilename = escapeMarkdownCharacters(path.relative(__dirname, filename))
+      const shortFilename = formatSourceName(path.relative(basePath, filename))
+      const linkFilename = formatLinkName(path.relative(basePath, filename), branch)
       return [
         `[${shortFilename}](${linkFilename})`,
         formatItem(e.lines),
@@ -128,49 +133,57 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 /**
  * Danger.js plugin for monitoring code coverage on changed files.
  */
-export function istanbulCoverage(config?: Partial<Config>) {
+export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
   const combinedConfig = makeCompleteConfiguration(config)
 
   let coveragePath = combinedConfig.coveragePath
-  if (require.main) {
-    const appDir = path.dirname(require.main.filename)
-    coveragePath = path.relative(appDir, combinedConfig.coveragePath)
-  }
+  if (process.mainModule) {
+    const appDir = `${process.mainModule.paths[0].split("node_modules")[0].slice(0, -1)}/`
 
+    coveragePath = path.resolve(appDir, combinedConfig.coveragePath)
+  }
   let coverage: CoverageModel
   try {
     const parsedCoverage = parseCoverageModel(coveragePath)
     if (!parsedCoverage) {
-      return
+      return Promise.resolve()
     }
     coverage = parsedCoverage
   } catch (error) {
     warn(error.message)
-    return
+    return Promise.resolve()
   }
+  const gitService = new GitService()
 
-  const modifiedFiles = filterForCoveredFiles(danger.git.modified_files, coverage)
-  const createdFiles = filterForCoveredFiles(danger.git.created_files, coverage)
-  const allFiles = Object.keys(coverage).filter(filename => filename !== "total")
+  const promise = Promise.all([gitService.getRootDirectory(), gitService.getCurrentCommit()])
 
-  const files = getFileSet(combinedConfig.reportFileSet, allFiles, modifiedFiles, createdFiles)
+  return promise.then(values => {
+    const gitRoot = values[0]
+    const gitBranch = values[1]
+    const modifiedFiles = filterForCoveredFiles(gitRoot, danger.git.modified_files, coverage)
+    const createdFiles = filterForCoveredFiles(gitRoot, danger.git.created_files, coverage)
+    const allFiles = Object.keys(coverage).filter(filename => filename !== "total")
 
-  if (files.length === 0) {
-    return
-  }
+    const files = getFileSet(combinedConfig.reportFileSet, allFiles, modifiedFiles, createdFiles)
 
-  const coverageEntries = files.reduce((current, file) => {
-    const copy = { ...current }
-    copy[file] = coverage[file]
-    return copy
-  }, {})
+    if (files.length === 0) {
+      return
+    }
 
-  const results = Object.keys(coverageEntries).reduce(
-    (entry, filename) => combineEntries(entry, coverageEntries[filename]),
-    createEmptyCoverageEntry()
-  )
+    const coverageEntries = files.reduce((current, file) => {
+      const copy = { ...current }
+      copy[file] = coverage[file]
+      return copy
+    }, {})
 
-  sendPRComment(combinedConfig, results)
-  const report = generateReport({ ...coverageEntries, total: results }, combinedConfig.reportFileSet)
-  markdown(report)
+    const results = Object.keys(coverageEntries).reduce(
+      (entry, filename) => combineEntries(entry, coverageEntries[filename]),
+      createEmptyCoverageEntry()
+    )
+
+    sendPRComment(combinedConfig, results)
+    const coverageModel = { ...coverageEntries, total: results }
+    const report = generateReport(gitRoot, gitBranch, coverageModel, combinedConfig.reportFileSet)
+    markdown(report)
+  })
 }
