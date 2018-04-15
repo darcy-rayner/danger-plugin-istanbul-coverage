@@ -6,6 +6,9 @@
 
 > Danger.js plugin for monitoring code coverage on changed files.
 
+<p align="center">
+  <img src="example.png" ></img>
+</p>
 
 ## Usage
 
