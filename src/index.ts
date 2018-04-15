@@ -155,7 +155,7 @@ export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
   }
   const gitService = new GitService()
 
-  const promise = Promise.all([gitService.getRootDirectory(), gitService.getCurrentBranch()])
+  const promise = Promise.all([gitService.getRootDirectory(), gitService.getCurrentCommit()])
 
   return promise.then(values => {
     const gitRoot = values[0]

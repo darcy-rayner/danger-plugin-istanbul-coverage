@@ -16,14 +16,14 @@ export class GitService {
   }
 
   /**
-   * Finds the current git branch.
-   * @returns A promise with the current git branch
+   * Finds the current git commit.
+   * @returns A promise with the current git commit
    */
-  getCurrentBranch(): Promise<string> {
+  getCurrentCommit(): Promise<string> {
     return new Promise((resolve, reject) => {
       exec("git rev-parse --short HEAD", (error, stdout, stderr) => {
         const failed = error || stderr !== ""
-        resolve(failed ? "master" : trimLineEnding(stdout))
+        resolve(failed ? "HEAD" : trimLineEnding(stdout))
       })
     })
   }

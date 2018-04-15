@@ -41,7 +41,7 @@ function setupGitService() {
   ;(GitService as any).mockImplementation(() => {
     return {
       getRootDirectory: () => Promise.resolve(__dirname),
-      getCurrentBranch: () => Promise.resolve("master"),
+      getCurrentCommit: () => Promise.resolve("master"),
     }
   })
 }
