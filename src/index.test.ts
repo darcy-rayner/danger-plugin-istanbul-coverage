@@ -9,15 +9,20 @@ const basePath = "/some/random/path/to/repo"
 
 function makeCoverageEntry(coverage: number) {
   return `{
-      "0": ${ coverage < 25 ? 0 : 1 },
-      "1": ${ coverage < 50 ? 0 : 1},
-      "2": ${ coverage < 75 ? 0 : 1 },
-      "3":  ${ coverage < 100 ? 0 : 1 }
+      "0": ${coverage < 25 ? 0 : 1},
+      "1": ${coverage < 50 ? 0 : 1},
+      "2": ${coverage < 75 ? 0 : 1},
+      "3":  ${coverage < 100 ? 0 : 1}
     }`
 }
 
-function makeEntry(fileName: string, lineCoverage = 100, statementCoverage = 100, functionCoverage = 100,
-                   branchCoverage = 100) {
+function makeEntry(
+  fileName: string,
+  lineCoverage = 100,
+  statementCoverage = 100,
+  functionCoverage = 100,
+  branchCoverage = 100
+) {
   return `
     "${fileName}": {
       "lines": { "total": 100, "covered": ${lineCoverage}, "skipped": 0, "pct": ${lineCoverage} },
@@ -29,10 +34,10 @@ function makeEntry(fileName: string, lineCoverage = 100, statementCoverage = 100
 }
 
 function setupCoverageFile(coverage?: string) {
-  (FilesystemService as any).mockImplementation( () => {
+  ;(FilesystemService as any).mockImplementation(() => {
     return {
-      exists: (p) => coverage !== undefined,
-      read: (p) => {
+      exists: p => coverage !== undefined,
+      read: p => {
         return coverage !== undefined ? Buffer.from(coverage, "utf8") : undefined
       },
     }
@@ -40,7 +45,6 @@ function setupCoverageFile(coverage?: string) {
 }
 
 describe("istanbulCoverage()", () => {
-
   beforeEach(() => {
     global.warn = jest.fn()
     global.message = jest.fn()
@@ -48,14 +52,8 @@ describe("istanbulCoverage()", () => {
     global.markdown = jest.fn()
     global.danger = {
       git: {
-        modified_files: [
-          "src/modified-file1.ts",
-          "src/modified-file2.ts",
-        ],
-        created_files: [
-          "src/created-file1.ts",
-          "src/created-file2.ts",
-        ],
+        modified_files: ["src/modified-file1.ts", "src/modified-file2.ts"],
+        created_files: ["src/created-file1.ts", "src/created-file2.ts"],
       },
     }
     setupCoverageFile(`{
@@ -76,41 +74,41 @@ describe("istanbulCoverage()", () => {
     jest.resetAllMocks()
   })
 
-  it("will only report on new files when reportFileSet is set to \"created\"", () => {
+  it('will only report on new files when reportFileSet is set to "created"', () => {
     istanbulCoverage({
       reportFileSet: "created",
     })
     expect(global.markdown).toHaveBeenCalledWith(
-`## Coverage in New Files
+      `## Coverage in New Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 [src/created\\-file1.ts](src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
 [src/created\\-file2.ts](src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
 Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
-`,
+`
     )
   })
 
-  it("will only report on modified files when reportFileSet is set to \"modified\"", () => {
+  it('will only report on modified files when reportFileSet is set to "modified"', () => {
     istanbulCoverage({
       reportFileSet: "modified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
-`## Coverage in Modified Files
+      `## Coverage in Modified Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 [src/modified\\-file1.ts](src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 [src/modified\\-file2.ts](src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 Total | (165/200) 83% | (75/200) 38% | (100/200) 50% | (75/200) 38%
-`,
+`
     )
   })
-  it("will only report on created and modified files when reportFileSet is set to \"createdOrModified\"", () => {
+  it('will only report on created and modified files when reportFileSet is set to "createdOrModified"', () => {
     istanbulCoverage({
       reportFileSet: "createdOrModified",
     })
     expect(global.markdown).toHaveBeenCalledWith(
-`## Coverage in Created or Modified Files
+      `## Coverage in Created or Modified Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 [src/created\\-file1.ts](src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
@@ -118,16 +116,16 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 [src/modified\\-file1.ts](src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 [src/modified\\-file2.ts](src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
-`,
+`
     )
   })
 
-  it("will report all files when reportFileSet is set to \"all\"", () => {
+  it('will report all files when reportFileSet is set to "all"', () => {
     istanbulCoverage({
       reportFileSet: "all",
     })
     expect(global.markdown).toHaveBeenCalledWith(
-`## Coverage in All Files
+      `## Coverage in All Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 [src/created\\-file1.ts](src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
@@ -136,7 +134,7 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 [src/modified\\-file2.ts](src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 [src/unmodified\\-field.ts](src/unmodified\\-field.ts) | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
-`,
+`
     )
   })
 
@@ -179,7 +177,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
     })
     expect(global.warn).not.toBeCalled()
   })
-  it("doesn't output anything when reportFileSet is set to \"created\" and there are no created files ", () => {
+  it('doesn\'t output anything when reportFileSet is set to "created" and there are no created files ', () => {
     global.danger.git.created_files = []
     istanbulCoverage({
       reportMode: "fail",
@@ -190,7 +188,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
     expect(global.message).not.toBeCalled()
   })
 
-  it("doesn't output anything when reportFileSet is set to \"modified\" and there are no modified files ", () => {
+  it('doesn\'t output anything when reportFileSet is set to "modified" and there are no modified files ', () => {
     global.danger.git.modified_files = []
     istanbulCoverage({
       reportMode: "fail",
@@ -222,23 +220,5 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
       reportMode: "fail",
     })
     expect(global.warn).toBeCalled()
-  })
-
-  it("escapes filenames with '|,(,),[,],#,*,{,},-,+,_,!,\\,`>' characters", () => {
-    // Excapes the list of special markdown characters, mentioned here:
-    // https://daringfireball.net/projects/markdown/syntax#backslash
-    setupCoverageFile(`{
-      ${makeEntry(`${__dirname}/src/file-with-characters{[(|#*-+_!\`)]}.ts`, 25, 25, 25, 25)}
-    }`)
-    istanbulCoverage()
-    const expectedFilename = `src/file\\-with\\-characters\\{\\[\\(\\|\\#\\*\\-\\+\\_\\!\\\`\\)\\]\\}.ts`
-    expect(global.markdown).toHaveBeenCalledWith(
-`## Coverage in All Files
-File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------: | -----------------: | ----------------: | --------------:
-[${expectedFilename}](${expectedFilename}) | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-Total | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
-`,
-    )
   })
 })

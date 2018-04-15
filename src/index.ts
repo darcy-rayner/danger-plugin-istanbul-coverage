@@ -15,6 +15,7 @@ import {
 declare var danger: DangerDSLType
 import * as _ from "lodash"
 import * as path from "path"
+import { escapeMarkdownCharacters, getPrettyPathName } from "./filename-utils"
 import FilesystemService from "./filesystem.service"
 
 export declare function message(message: string): void
@@ -90,8 +91,7 @@ function formatItem(item: CoverageItem) {
 }
 
 function formatSourceName(source: string) {
-  const escapedCharacters = ["|", "(", ")", "[", "]", "#", "*", "{", "}", "-", "+", "_", "!", "\\", "`"]
-  return [...source].map(c => (_.includes(escapedCharacters, c) ? `\\${c}` : c)).join("")
+  return escapeMarkdownCharacters(getPrettyPathName(source, 30))
 }
 
 function generateReport(coverage: CoverageModel, reportChangeType: ReportFileSet) {
@@ -105,8 +105,9 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
     .map(filename => {
       const e = coverage[filename]
       const shortFilename = formatSourceName(path.relative(__dirname, filename))
+      const linkFilename = escapeMarkdownCharacters(path.relative(__dirname, filename))
       return [
-        `[${shortFilename}](${shortFilename})`,
+        `[${shortFilename}](${linkFilename})`,
         formatItem(e.lines),
         formatItem(e.statements),
         formatItem(e.functions),
