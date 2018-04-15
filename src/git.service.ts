@@ -21,7 +21,7 @@ export class GitService {
    */
   getCurrentBranch(): Promise<string> {
     return new Promise((resolve, reject) => {
-      exec("git rev-parse --abbrev-ref HEAD", (error, stdout, stderr) => {
+      exec("git rev-parse --short HEAD", (error, stdout, stderr) => {
         const failed = error || stderr !== ""
         resolve(failed ? "master" : trimLineEnding(stdout))
       })
