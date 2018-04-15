@@ -133,11 +133,11 @@ export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
   const combinedConfig = makeCompleteConfiguration(config)
 
   let coveragePath = combinedConfig.coveragePath
-  if (require.main) {
-    const appDir = path.dirname(require.main.filename)
-    coveragePath = path.relative(appDir, combinedConfig.coveragePath)
-  }
+  if (process.mainModule) {
+    const appDir = `${process.mainModule.paths[0].split("node_modules")[0].slice(0, -1)}/`
 
+    coveragePath = path.resolve(appDir, combinedConfig.coveragePath)
+  }
   let coverage: CoverageModel
   try {
     const parsedCoverage = parseCoverageModel(coveragePath)

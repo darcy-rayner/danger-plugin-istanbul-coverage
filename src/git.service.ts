@@ -1,5 +1,6 @@
 import { exec } from "child_process"
 import * as util from "util"
+import { parseGitRootPathOutput } from "./filename-utils"
 
 export class GitService {
   /**
@@ -10,10 +11,7 @@ export class GitService {
     const promiseExec = util.promisify(exec)
     return promiseExec("git rev-parse --show-toplevel")
       .then(output => {
-        if (output.stderr !== "") {
-          return __dirname
-        }
-        return output.stdout
+        return output.stderr !== "" ? __dirname : parseGitRootPathOutput(output.stdout)
       })
       .catch(error => {
         return __dirname

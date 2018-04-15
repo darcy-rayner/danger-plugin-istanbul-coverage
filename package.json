@@ -28,7 +28,7 @@
     "commit": "git-cz",
     "commitmsg": "validate-commit-msg",
     "build": "tsc",
-    "test": "jest",
+    "test": "jest --collectCoverage",
     "predocs": "rm -rf docs/",
     "docs": "esdoc -c .esdoc.json",
     "prepublish": "npm run build",
