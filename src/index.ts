@@ -80,9 +80,11 @@ function sendPRComment(config: Config, results: CoverageEntry) {
   const reportFunc = getReportFunc(config.reportMode)
   const messageType = getFileGroupLongDescription(config.reportFileSet)
   if (!meetsThreshold(results, config.threshold)) {
-    reportFunc(`🤔 Hmmm, code coverage is looking low for ${messageType}.`)
+    const defaultMessage = `🤔 Hmmm, code coverage is looking low for ${messageType}.`
+    reportFunc(config.customFailureMessage !== undefined ? config.customFailureMessage : defaultMessage)
   } else {
-    message(`🎉 Test coverage is looking good for ${messageType}`)
+    const defaultMessage = `🎉 Test coverage is looking good for ${messageType}`
+    message(config.customSuccessMessage !== undefined ? config.customSuccessMessage : defaultMessage)
   }
 }
 
