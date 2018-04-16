@@ -17,6 +17,11 @@ export interface Config {
   reportMode: ReportMode
 }
 
+/**
+ * Completes a partial configuration with default values.
+ * @param config The configuration to complete
+ * @returns A complete configuration
+ */
 export function makeCompleteConfiguration(config?: Partial<Config>): Config {
   const defaults: Config = {
     coveragePath: "./coverage/coverage-summary.json",
