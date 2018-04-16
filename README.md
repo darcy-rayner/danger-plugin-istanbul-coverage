@@ -28,12 +28,21 @@ import istanbulCoverage from "danger-plugin-istanbul-coverage"
 schedule(istanbulCoverage()) // Use default configuration
 
 schedule(istanbulCoverage({
+  // Set a custom success message
+  customSuccessMessage: "Congrats, coverage is good",
+
+  // Set a custom failure message
+  customFailureMessage: "Coverage is a little low, take a look",
+
   // The location of the istanbul coverage file.
   coveragePath: "./coverage/coverage-summary.json",
+
   // Which set of files to summarise from the coverage file.
   reportFileSet: "all", // || "modified" || "created" || "createdOrModified"
+
   // What to do when the PR doesn't meet the minimum code coverage threshold
   reportMode: "message", // || "warn" || "fail"
+
   // Minimum coverage threshold percentages. Compared against the cumulative coverage of the reportFileSet. 
   threshold: {
     statements: 100,
@@ -44,7 +53,7 @@ schedule(istanbulCoverage({
 }))
 ```
 
-This plugin requires the 'json-summary' report mode be enabled with Istanbul. Make sure Danger runs after your unit tests in your CI workflow.
+This plugin requires the 'json-summary' report mode be enabled with Istanbul. Make sure Danger runs after your unit tests in your CI workflow. 
 
 ## Changelog
 
