@@ -9,4 +9,5 @@ types/*
 !types/index.d.ts
 coverage
 .vscode/*
+*.png
 
