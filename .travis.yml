@@ -8,6 +8,10 @@ script:
   - yarn test
   - yarn danger ci
 
+branches:
+  only:
+  - master
+
 after_success:
   - npm run semantic-release
 
