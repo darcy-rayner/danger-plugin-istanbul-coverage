@@ -10,6 +10,7 @@ import {
   createEmptyCoverageEntry,
   meetsThreshold,
   parseCoverageModel,
+  reduceEntries,
 } from "./coverage.model"
 
 declare var danger: DangerDSLType
@@ -103,25 +104,32 @@ function formatLinkName(source: string, branchName: string): string {
 function generateReport(basePath: string, branch: string, coverage: CoverageModel, reportChangeType: ReportFileSet) {
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------: | -----------------: | ----------------: | --------------:
-`
+---- | ------------: | -----------------: | ----------------: | --------------:`
 
-  const lines = Object.keys(coverage)
-    .filter(filename => filename !== "total")
-    .sort((a, b) => a.localeCompare(b, "en-US"))
-    .map(filename => {
-      const e = coverage[filename]
-      const shortFilename = formatSourceName(path.relative(basePath, filename))
-      const linkFilename = formatLinkName(path.relative(basePath, filename), branch)
-      return [
-        `[${shortFilename}](${linkFilename})`,
-        formatItem(e.lines),
-        formatItem(e.statements),
-        formatItem(e.functions),
-        formatItem(e.branches),
-      ].join(" | ")
-    })
-    .join("\n")
+  const lines = Object.keys(coverage.displayed).map(filename => {
+    const e = coverage.displayed[filename]
+    const shortFilename = formatSourceName(path.relative(basePath, filename))
+    const linkFilename = formatLinkName(path.relative(basePath, filename), branch)
+    return [
+      `[${shortFilename}](${linkFilename})`,
+      formatItem(e.lines),
+      formatItem(e.statements),
+      formatItem(e.functions),
+      formatItem(e.branches),
+    ].join(" | ")
+  })
+
+  const ellided =
+    coverage.ellidedCount === 0
+      ? undefined
+      : [
+          `Other (${coverage.ellidedCount} more)`,
+          formatItem(coverage.ellided.lines),
+          formatItem(coverage.ellided.statements),
+          formatItem(coverage.ellided.functions),
+          formatItem(coverage.ellided.branches),
+        ].join(" | ")
+
   const total = [
     "Total",
     formatItem(coverage.total.lines),
@@ -129,7 +137,7 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
     formatItem(coverage.total.functions),
     formatItem(coverage.total.branches),
   ].join(" | ")
-  return `${header}${lines}\n${total}\n`
+  return [header, ...lines, ellided, total, ""].filter(part => part !== undefined).join("\n")
 }
 
 /**
@@ -166,25 +174,34 @@ export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
     const createdFiles = filterForCoveredFiles(gitRoot, danger.git.created_files, coverage)
     const allFiles = Object.keys(coverage).filter(filename => filename !== "total")
 
-    const files = getFileSet(combinedConfig.reportFileSet, allFiles, modifiedFiles, createdFiles)
+    const files = getFileSet(combinedConfig.reportFileSet, allFiles, modifiedFiles, createdFiles).sort((a, b) =>
+      a.localeCompare(b, "en-US")
+    )
 
     if (files.length === 0) {
       return
     }
+    const displayedFiles = files.slice(0, Math.min(files.length, combinedConfig.numberOfEntries))
+    const displayedEntries = displayedFiles.map(file => coverage[file])
+    const ellidedEntries = files.slice(combinedConfig.numberOfEntries).map(file => coverage[file])
 
-    const coverageEntries = files.reduce((current, file) => {
+    const ellidedSummary = reduceEntries(ellidedEntries)
+    const totalSummary = reduceEntries([...displayedEntries, ellidedSummary])
+
+    const coverageEntries = displayedFiles.reduce((current, file) => {
       const copy = { ...current }
       copy[file] = coverage[file]
       return copy
     }, {})
 
-    const results = Object.keys(coverageEntries).reduce(
-      (entry, filename) => combineEntries(entry, coverageEntries[filename]),
-      createEmptyCoverageEntry()
-    )
+    sendPRComment(combinedConfig, totalSummary)
+    const coverageModel: CoverageModel = {
+      displayed: coverageEntries,
+      total: totalSummary,
+      ellided: ellidedSummary,
+      ellidedCount: ellidedEntries.length,
+    }
 
-    sendPRComment(combinedConfig, results)
-    const coverageModel = { ...coverageEntries, total: results }
     const report = generateReport(gitRoot, gitBranch, coverageModel, combinedConfig.reportFileSet)
     markdown(report)
   })

@@ -160,6 +160,26 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
     })
   })
 
+  it("will only show the maximum number of entries", done => {
+    istanbulCoverage({
+      reportFileSet: "all",
+      numberOfEntries: 3,
+    }).then(() => {
+      expect(global.markdown).toHaveBeenCalledWith(
+        `## Coverage in All Files
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------: | -----------------: | ----------------: | --------------:
+[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created\\-file2.ts](../blob/master/src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/modified\\-file1.ts](../blob/master/src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+Other (2 more) | (124/200) 62% | (75/200) 38% | (100/200) 50% | (75/200) 38%
+Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
+`
+      )
+      done()
+    })
+  })
+
   it("fails the build when reportMode is set to FAIL and coverage is below threshold", done => {
     istanbulCoverage({
       reportMode: "fail",

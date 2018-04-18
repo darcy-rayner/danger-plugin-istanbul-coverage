@@ -18,7 +18,11 @@ export interface CoverageEntry {
 
 export interface CoverageModel {
   total: CoverageEntry
-  [key: string]: CoverageEntry
+  ellided: CoverageEntry
+  ellidedCount: number
+  displayed: {
+    [key: string]: CoverageEntry
+  }
 }
 
 export function combineItems(first: CoverageItem, second: CoverageItem): CoverageItem {
@@ -39,6 +43,10 @@ export function combineEntries(first: CoverageEntry, second: CoverageEntry): Cov
     branches: combineItems(first.branches, second.branches),
     functions: combineItems(first.functions, second.functions),
   }
+}
+
+export function reduceEntries(entries: CoverageEntry[]): CoverageEntry {
+  return entries.reduce((cumulativeEntry, entry) => combineEntries(cumulativeEntry, entry), createEmptyCoverageEntry())
 }
 
 export function createEmptyCoverageEntry(): CoverageEntry {

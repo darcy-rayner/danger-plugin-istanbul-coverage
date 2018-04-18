@@ -34,6 +34,9 @@ schedule(istanbulCoverage({
   // Set a custom failure message
   customFailureMessage: "Coverage is a little low, take a look",
 
+  // Add a maximum number of entries to display
+  numberOfEntries: 10,
+
   // The location of the istanbul coverage file.
   coveragePath: "./coverage/coverage-summary.json",
 
