@@ -1,8 +1,0 @@
-["## Coverage in New Files
-File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------: | -----------------: | ----------------: | --------------:
-
-[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% |(50/100) 50%
-[src/created\\-file2.ts](../blob/master/src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
-Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
-"]

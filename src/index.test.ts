@@ -88,45 +88,41 @@ describe("istanbulCoverage()", () => {
     jest.resetAllMocks()
   })
 
-  it('will only report on new files when reportFileSet is set to "created"', done => {
-    istanbulCoverage({
+  it('will only report on new files when reportFileSet is set to "created"', async () => {
+    await istanbulCoverage({
       reportFileSet: "created",
-    }).then(() => {
-      expect(global.markdown).toHaveBeenCalledWith(
-        `## Coverage in New Files
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in New Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 [src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
 [src/created\\-file2.ts](../blob/master/src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
 Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
 `
-      )
-      done()
-    })
+    )
   })
 
-  it('will only report on modified files when reportFileSet is set to "modified"', done => {
-    istanbulCoverage({
+  it('will only report on modified files when reportFileSet is set to "modified"', async () => {
+    await istanbulCoverage({
       reportFileSet: "modified",
-    }).then(() => {
-      expect(global.markdown).toHaveBeenCalledWith(
-        `## Coverage in Modified Files
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in Modified Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 [src/modified\\-file1.ts](../blob/master/src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 [src/modified\\-file2.ts](../blob/master/src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 Total | (165/200) 83% | (75/200) 38% | (100/200) 50% | (75/200) 38%
 `
-      )
-      done()
-    })
+    )
   })
-  it('will only report on created and modified files when reportFileSet is set to "createdOrModified"', done => {
-    istanbulCoverage({
+  it('will only report on created and modified files when reportFileSet is set to "createdOrModified"', async () => {
+    await istanbulCoverage({
       reportFileSet: "createdOrModified",
-    }).then(() => {
-      expect(global.markdown).toHaveBeenCalledWith(
-        `## Coverage in Created or Modified Files
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in Created or Modified Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 [src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
@@ -135,17 +131,15 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 [src/modified\\-file2.ts](../blob/master/src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
 `
-      )
-      done()
-    })
+    )
   })
 
-  it('will report all files when reportFileSet is set to "all"', done => {
-    istanbulCoverage({
+  it('will report all files when reportFileSet is set to "all"', async () => {
+    await istanbulCoverage({
       reportFileSet: "all",
-    }).then(() => {
-      expect(global.markdown).toHaveBeenCalledWith(
-        `## Coverage in All Files
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in All Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 [src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
@@ -155,18 +149,16 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 [src/unmodified\\-field.ts](../blob/master/src/unmodified\\-field.ts) | (25/100) 25% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
 `
-      )
-      done()
-    })
+    )
   })
 
-  it("will only show the maximum number of entries", done => {
-    istanbulCoverage({
+  it("will only show the maximum number of entries", async () => {
+    await istanbulCoverage({
       reportFileSet: "all",
       numberOfEntries: 3,
-    }).then(() => {
-      expect(global.markdown).toHaveBeenCalledWith(
-        `## Coverage in All Files
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in All Files
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 ---- | ------------: | -----------------: | ----------------: | --------------:
 [src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
@@ -175,22 +167,18 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 Other (2 more) | (124/200) 62% | (75/200) 38% | (100/200) 50% | (75/200) 38%
 Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
 `
-      )
-      done()
-    })
+    )
   })
 
-  it("fails the build when reportMode is set to FAIL and coverage is below threshold", done => {
-    istanbulCoverage({
+  it("fails the build when reportMode is set to FAIL and coverage is below threshold", async () => {
+    await istanbulCoverage({
       reportMode: "fail",
-    }).then(() => {
-      expect(global.fail).toBeCalled()
-      done()
     })
+    expect(global.fail).toBeCalled()
   })
 
-  it("passes the build when reportMode is set to FAIL and coverage is above threshold", done => {
-    istanbulCoverage({
+  it("passes the build when reportMode is set to FAIL and coverage is above threshold", async () => {
+    await istanbulCoverage({
       reportMode: "fail",
       threshold: {
         lines: 25,
@@ -198,23 +186,19 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
         functions: 25,
         branches: 25,
       },
-    }).then(() => {
-      expect(global.fail).not.toBeCalled()
-      done()
     })
+    expect(global.fail).not.toBeCalled()
   })
 
-  it("warns the build when reportMode is set to WARN and coverage is below threshold", done => {
-    istanbulCoverage({
+  it("warns the build when reportMode is set to WARN and coverage is below threshold", async () => {
+    await istanbulCoverage({
       reportMode: "warn",
-    }).then(() => {
-      expect(global.warn).toBeCalled()
-      done()
     })
+    expect(global.warn).toBeCalled()
   })
 
-  it("passes the build when reportMode is set to WARN and coverage is above threshold", done => {
-    istanbulCoverage({
+  it("passes the build when reportMode is set to WARN and coverage is above threshold", async () => {
+    await istanbulCoverage({
       reportMode: "warn",
       threshold: {
         lines: 25,
@@ -222,15 +206,13 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
         functions: 25,
         branches: 25,
       },
-    }).then(() => {
-      expect(global.warn).not.toBeCalled()
-      done()
     })
+    expect(global.warn).not.toBeCalled()
   })
 
-  it("logs the custom success message if one is specified and coverage is above threshold", done => {
+  it("logs the custom success message if one is specified and coverage is above threshold", async () => {
     const customMessage = "This is the custom message"
-    istanbulCoverage({
+    await istanbulCoverage({
       reportMode: "message",
       customSuccessMessage: customMessage,
       threshold: {
@@ -239,75 +221,61 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
         functions: 25,
         branches: 25,
       },
-    }).then(() => {
-      expect(global.message).toBeCalledWith(customMessage)
-      done()
     })
+    expect(global.message).toBeCalledWith(customMessage)
   })
 
-  it("logs the custom failure message if one is specified and coverage is below threshold", done => {
+  it("logs the custom failure message if one is specified and coverage is below threshold", async () => {
     const customMessage = "This is the custom message"
-    istanbulCoverage({
+    await istanbulCoverage({
       reportMode: "message",
       customFailureMessage: customMessage,
-    }).then(() => {
-      expect(global.message).toBeCalledWith(customMessage)
-      done()
     })
+    expect(global.message).toBeCalledWith(customMessage)
   })
 
-  it('doesn\'t output anything when reportFileSet is set to "created" and there are no created files ', done => {
+  it('doesn\'t output anything when reportFileSet is set to "created" and there are no created files ', async () => {
     global.danger.git.created_files = []
-    istanbulCoverage({
+    await istanbulCoverage({
       reportMode: "fail",
       reportFileSet: "created",
-    }).then(() => {
-      expect(global.fail).not.toBeCalled()
-      expect(global.warn).not.toBeCalled()
-      expect(global.message).not.toBeCalled()
-      done()
     })
+    expect(global.fail).not.toBeCalled()
+    expect(global.warn).not.toBeCalled()
+    expect(global.message).not.toBeCalled()
   })
 
-  it('doesn\'t output anything when reportFileSet is set to "modified" and there are no modified files ', done => {
+  it('doesn\'t output anything when reportFileSet is set to "modified" and there are no modified files ', async () => {
     global.danger.git.modified_files = []
-    istanbulCoverage({
+    await istanbulCoverage({
       reportMode: "fail",
       reportFileSet: "modified",
-    }).then(() => {
-      expect(global.fail).not.toBeCalled()
-      expect(global.warn).not.toBeCalled()
-      expect(global.message).not.toBeCalled()
-      done()
     })
+    expect(global.fail).not.toBeCalled()
+    expect(global.warn).not.toBeCalled()
+    expect(global.message).not.toBeCalled()
   })
-  it("doesn't output anything when the coverage data is empty", done => {
+  it("doesn't output anything when the coverage data is empty", async () => {
     setupCoverageFile("{}")
-    istanbulCoverage({
+    await istanbulCoverage({
       reportMode: "fail",
-    }).then(() => {
-      expect(global.fail).not.toBeCalled()
-      expect(global.warn).not.toBeCalled()
-      expect(global.message).not.toBeCalled()
-      done()
     })
+    expect(global.fail).not.toBeCalled()
+    expect(global.warn).not.toBeCalled()
+    expect(global.message).not.toBeCalled()
   })
-  it("outputs a warning when it can't find the coverage file", done => {
+  it("outputs a warning when it can't find the coverage file", async () => {
     setupCoverageFile(undefined)
-    istanbulCoverage({
+    await istanbulCoverage({
       reportMode: "warn",
-    }).then(() => {
-      expect(global.warn).toBeCalled()
-      done()
     })
+    expect(global.warn).toBeCalled()
   })
-  it("outputs a warning when coverage file is invalidly formatted", done => {
+  it("outputs a warning when coverage file is invalidly formatted", async () => {
     setupCoverageFile("{")
-    istanbulCoverage({
+    await istanbulCoverage({
       reportMode: "fail",
-    }).then(() => {
-      expect(global.warn).toBeCalled()
-      done()
     })
+    expect(global.warn).toBeCalled()
   })
 })
