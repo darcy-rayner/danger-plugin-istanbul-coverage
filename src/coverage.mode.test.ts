@@ -1,12 +1,12 @@
 import {
   combineEntries,
-  combineItems,
+  CoverageCollection,
   CoverageEntry,
   CoverageItem,
   CoverageModel,
-  createEmptyCoverageEntry,
+  makeCoverageModel,
   meetsThreshold,
-  parseCoverageModel,
+  parseCoverageCollection,
 } from "./coverage.model"
 
 describe("combineEntries()", () => {
@@ -56,7 +56,6 @@ describe("combineEntries()", () => {
 })
 
 describe("meetsThreshold()", () => {
-
   const entry = Object.freeze({
     lines: { total: 100, covered: 50, skipped: 50, pct: 50 },
     statements: { total: 100, covered: 50, skipped: 50, pct: 50 },
@@ -88,4 +87,60 @@ describe("meetsThreshold()", () => {
     const result = meetsThreshold(entry, { lines: 50, statements: 50, branches: 50, functions: 50 })
     expect(result).toBe(true)
   })
+})
+
+describe("makeCoverageModel", () => {
+  const files = ["file1", "file2", "file3", "file4"]
+  const coverage: CoverageCollection = {
+    file1: {
+      lines: { total: 100, covered: 50, skipped: 50, pct: 50 },
+      functions: { total: 100, covered: 50, skipped: 50, pct: 50 },
+      statements: { total: 100, covered: 50, skipped: 50, pct: 50 },
+      branches: { total: 100, covered: 50, skipped: 50, pct: 50 },
+    },
+    file2: {
+      lines: { total: 100, covered: 60, skipped: 40, pct: 60 },
+      functions: { total: 100, covered: 60, skipped: 40, pct: 60 },
+      statements: { total: 100, covered: 60, skipped: 40, pct: 60 },
+      branches: { total: 100, covered: 60, skipped: 40, pct: 60 },
+    },
+    file3: {
+      lines: { total: 100, covered: 70, skipped: 30, pct: 70 },
+      functions: { total: 100, covered: 70, skipped: 30, pct: 70 },
+      statements: { total: 100, covered: 70, skipped: 30, pct: 70 },
+      branches: { total: 100, covered: 70, skipped: 30, pct: 70 },
+    },
+    file4: {
+      lines: { total: 100, covered: 80, skipped: 20, pct: 80 },
+      functions: { total: 100, covered: 80, skipped: 20, pct: 80 },
+      statements: { total: 100, covered: 80, skipped: 20, pct: 80 },
+      branches: { total: 100, covered: 80, skipped: 20, pct: 80 },
+    },
+  }
+
+  it("calculates the average of the final two elided entries", () => {
+    const output = makeCoverageModel(2, files, coverage)
+    expect(output.elidedCount).toEqual(2)
+    expect(output.elided).toEqual({
+      lines: { total: 200, covered: 150, skipped: 50, pct: 75 },
+      functions: { total: 200, covered: 150, skipped: 50, pct: 75 },
+      statements: { total: 200, covered: 150, skipped: 50, pct: 75 },
+      branches: { total: 200, covered: 150, skipped: 50, pct: 75 },
+    })
+  })
+
+  it("doesn't elide when total number of files is equal to numberOfEntries to display", () => {
+    const output = makeCoverageModel(4, files, coverage)
+    expect(output.elidedCount).toEqual(0)
+    expect(output.elided).toEqual({
+      lines: { total: 0, covered: 0, skipped: 0, pct: 0 },
+      functions: { total: 0, covered: 0, skipped: 0, pct: 0 },
+      statements: { total: 0, covered: 0, skipped: 0, pct: 0 },
+      branches: { total: 0, covered: 0, skipped: 0, pct: 0 },
+    })
+  })
+})
+
+describe("parseCoverageCollection", () => {
+  it("")
 })

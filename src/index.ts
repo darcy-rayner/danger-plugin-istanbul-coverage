@@ -2,14 +2,13 @@
 import { DangerDSLType } from "../node_modules/danger/distribution/dsl/DangerDSL"
 import { Config, CoverageThreshold, makeCompleteConfiguration, ReportFileSet, ReportMode } from "./config.model"
 import {
-  combineEntries,
-  combineItems,
+  CoverageCollection,
   CoverageEntry,
   CoverageItem,
   CoverageModel,
-  createEmptyCoverageEntry,
+  makeCoverageModel,
   meetsThreshold,
-  parseCoverageModel,
+  parseCoverageCollection,
 } from "./coverage.model"
 
 declare var danger: DangerDSLType
@@ -23,7 +22,7 @@ export declare function warn(message: string): void
 export declare function fail(message: string): void
 export declare function markdown(message: string): void
 
-function filterForCoveredFiles(basePath: string, files: string[], coverage: CoverageModel): string[] {
+function filterForCoveredFiles(basePath: string, files: string[], coverage: CoverageCollection): string[] {
   return files.map(filename => path.resolve(basePath, filename)).filter(filename => coverage[filename] !== undefined)
 }
 
@@ -103,25 +102,32 @@ function formatLinkName(source: string, branchName: string): string {
 function generateReport(basePath: string, branch: string, coverage: CoverageModel, reportChangeType: ReportFileSet) {
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
 File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------: | -----------------: | ----------------: | --------------:
-`
+---- | ------------: | -----------------: | ----------------: | --------------:`
 
-  const lines = Object.keys(coverage)
-    .filter(filename => filename !== "total")
-    .sort((a, b) => a.localeCompare(b, "en-US"))
-    .map(filename => {
-      const e = coverage[filename]
-      const shortFilename = formatSourceName(path.relative(basePath, filename))
-      const linkFilename = formatLinkName(path.relative(basePath, filename), branch)
-      return [
-        `[${shortFilename}](${linkFilename})`,
-        formatItem(e.lines),
-        formatItem(e.statements),
-        formatItem(e.functions),
-        formatItem(e.branches),
-      ].join(" | ")
-    })
-    .join("\n")
+  const lines = Object.keys(coverage.displayed).map(filename => {
+    const e = coverage.displayed[filename]
+    const shortFilename = formatSourceName(path.relative(basePath, filename))
+    const linkFilename = formatLinkName(path.relative(basePath, filename), branch)
+    return [
+      `[${shortFilename}](${linkFilename})`,
+      formatItem(e.lines),
+      formatItem(e.statements),
+      formatItem(e.functions),
+      formatItem(e.branches),
+    ].join(" | ")
+  })
+
+  const ellided =
+    coverage.elidedCount === 0
+      ? undefined
+      : [
+          `Other (${coverage.elidedCount} more)`,
+          formatItem(coverage.elided.lines),
+          formatItem(coverage.elided.statements),
+          formatItem(coverage.elided.functions),
+          formatItem(coverage.elided.branches),
+        ].join(" | ")
+
   const total = [
     "Total",
     formatItem(coverage.total.lines),
@@ -129,7 +135,7 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
     formatItem(coverage.total.functions),
     formatItem(coverage.total.branches),
   ].join(" | ")
-  return `${header}${lines}\n${total}\n`
+  return [header, ...lines, ellided, total, ""].filter(part => part !== undefined).join("\n")
 }
 
 /**
@@ -144,9 +150,9 @@ export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
 
     coveragePath = path.resolve(appDir, combinedConfig.coveragePath)
   }
-  let coverage: CoverageModel
+  let coverage: CoverageCollection
   try {
-    const parsedCoverage = parseCoverageModel(coveragePath)
+    const parsedCoverage = parseCoverageCollection(coveragePath)
     if (!parsedCoverage) {
       return Promise.resolve()
     }
@@ -157,9 +163,9 @@ export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
   }
   const gitService = new GitService()
 
-  const promise = Promise.all([gitService.getRootDirectory(), gitService.getCurrentCommit()])
+  const gitProperties = Promise.all([gitService.getRootDirectory(), gitService.getCurrentCommit()])
 
-  return promise.then(values => {
+  return gitProperties.then(values => {
     const gitRoot = values[0]
     const gitBranch = values[1]
     const modifiedFiles = filterForCoveredFiles(gitRoot, danger.git.modified_files, coverage)
@@ -172,19 +178,9 @@ export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
       return
     }
 
-    const coverageEntries = files.reduce((current, file) => {
-      const copy = { ...current }
-      copy[file] = coverage[file]
-      return copy
-    }, {})
+    const coverageModel = makeCoverageModel(combinedConfig.numberOfEntries, files, coverage)
+    sendPRComment(combinedConfig, coverageModel.total)
 
-    const results = Object.keys(coverageEntries).reduce(
-      (entry, filename) => combineEntries(entry, coverageEntries[filename]),
-      createEmptyCoverageEntry()
-    )
-
-    sendPRComment(combinedConfig, results)
-    const coverageModel = { ...coverageEntries, total: results }
     const report = generateReport(gitRoot, gitBranch, coverageModel, combinedConfig.reportFileSet)
     markdown(report)
   })

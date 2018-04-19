@@ -5,6 +5,7 @@ describe("makeCompleteConfiguration", () => {
     coveragePath: "./coverage/coverage-summary.json",
     reportFileSet: "all",
     reportMode: "message",
+    numberOfEntries: 10,
     threshold: {
       statements: 100,
       branches: 100,

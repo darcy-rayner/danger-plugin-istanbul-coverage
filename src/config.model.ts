@@ -11,6 +11,7 @@ export interface CoverageThreshold {
 export interface Config {
   customSuccessMessage?: string
   customFailureMessage?: string
+  numberOfEntries: number
   coveragePath: string
   reportFileSet: ReportFileSet
   threshold: CoverageThreshold
@@ -27,6 +28,7 @@ export function makeCompleteConfiguration(config?: Partial<Config>): Config {
     coveragePath: "./coverage/coverage-summary.json",
     reportFileSet: "all",
     reportMode: "message",
+    numberOfEntries: 10,
     threshold: {
       statements: 100,
       branches: 100,
