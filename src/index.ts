@@ -178,7 +178,12 @@ export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
       return
     }
 
-    const coverageModel = makeCoverageModel(combinedConfig.numberOfEntries, files, coverage)
+    const coverageModel = makeCoverageModel(
+      combinedConfig.numberOfEntries,
+      files,
+      coverage,
+      combinedConfig.entrySortMethod
+    )
     sendPRComment(combinedConfig, coverageModel.total)
 
     const report = generateReport(gitRoot, gitBranch, coverageModel, combinedConfig.reportFileSet)

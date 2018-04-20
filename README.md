@@ -34,6 +34,9 @@ schedule(istanbulCoverage({
   // Set a custom failure message
   customFailureMessage: "Coverage is a little low, take a look",
 
+  // How to sort the entries in the table
+  entrySortMethod: "alphabetical" // || "least-coverage" || "most-coverage" || "largest-file-size" ||"smallest-file-size" || "uncovered-lines"
+
   // Add a maximum number of entries to display
   numberOfEntries: 10,
 
