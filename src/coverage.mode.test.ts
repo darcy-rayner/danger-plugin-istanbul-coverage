@@ -7,6 +7,7 @@ import {
   makeCoverageModel,
   meetsThreshold,
   parseCoverageCollection,
+  sortFiles,
 } from "./coverage.model"
 
 describe("combineEntries()", () => {
@@ -141,6 +142,54 @@ describe("makeCoverageModel", () => {
   })
 })
 
-describe("parseCoverageCollection", () => {
-  it("")
+describe("sortFiles", () => {
+  const coverage = {
+    file1: {
+      lines: { total: 50, covered: 25, skipped: 25, pct: 50 },
+      functions: { total: 100, covered: 50, skipped: 50, pct: 50 },
+      statements: { total: 100, covered: 50, skipped: 50, pct: 50 },
+      branches: { total: 100, covered: 50, skipped: 50, pct: 50 },
+    },
+    file2: {
+      lines: { total: 150, covered: 60, skipped: 40, pct: 60 },
+      functions: { total: 100, covered: 60, skipped: 40, pct: 60 },
+      statements: { total: 100, covered: 60, skipped: 40, pct: 60 },
+      branches: { total: 100, covered: 60, skipped: 40, pct: 60 },
+    },
+    file3: {
+      lines: { total: 100, covered: 700, skipped: 300, pct: 70 },
+      functions: { total: 100, covered: 70, skipped: 30, pct: 70 },
+      statements: { total: 100, covered: 70, skipped: 30, pct: 70 },
+      branches: { total: 100, covered: 70, skipped: 30, pct: 70 },
+    },
+  }
+  it("sorts files by their line coverage percentage in descending order", () => {
+    const output = sortFiles(["file1", "file2", "file3"], coverage, "most-coverage")
+    expect(output).toEqual(["file3", "file2", "file1"])
+  })
+  it("sorts files by their line coverage percentage in ascending order", () => {
+    const output = sortFiles(["file1", "file2", "file3"], coverage, "least-coverage")
+    expect(output).toEqual(["file1", "file2", "file3"])
+  })
+  it("skips files not in input file list", () => {
+    const output = sortFiles(["file1", "file3"], coverage, "most-coverage")
+    expect(output).toEqual(["file3", "file1"])
+  })
+  it("sorts files by the number of lines in descending order", () => {
+    const output = sortFiles(["file1", "file2", "file3"], coverage, "largest-file-size")
+    expect(output).toEqual(["file2", "file3", "file1"])
+  })
+  it("sorts files the number of lines in ascending order", () => {
+    const output = sortFiles(["file1", "file2", "file3"], coverage, "smallest-file-size")
+    expect(output).toEqual(["file1", "file3", "file2"])
+  })
+  it("sorts files by the number of uncovered lines in descending order", () => {
+    const output = sortFiles(["file1", "file2", "file3"], coverage, "uncovered-lines")
+    expect(output).toEqual(["file3", "file2", "file1"])
+  })
+
+  it("sorts files in alphabetical order", () => {
+    const output = sortFiles(["c", "b", "a"], coverage, "alphabetically")
+    expect(output).toEqual(["a", "b", "c"])
+  })
 })

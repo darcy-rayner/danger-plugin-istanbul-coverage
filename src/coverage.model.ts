@@ -1,5 +1,6 @@
+import { METHODS } from "http"
 import * as path from "path"
-import { Config, CoverageThreshold } from "./config.model"
+import { Config, CoverageThreshold, SortMethod } from "./config.model"
 import FilesystemService from "./filesystem.service"
 
 export interface CoverageItem {
@@ -79,8 +80,55 @@ export function parseCoverageCollection(coveragePath: string): CoverageCollectio
   }
 }
 
-export function makeCoverageModel(numberOfEntries: number, files: string[], coverageCollection: CoverageCollection) {
-  const sortedFiles = files.sort((a, b) => a.localeCompare(b, "en-US"))
+function sortFileByCoverageKey(
+  files: string[],
+  coverageCollection: CoverageCollection,
+  ascending: boolean,
+  key: string
+) {
+  return files
+    .map(file => {
+      return { file, entry: coverageCollection[file] }
+    })
+    .sort((a, b) => (ascending ? a.entry.lines[key] - b.entry.lines[key] : b.entry.lines[key] - a.entry.lines[key]))
+    .map(entry => entry.file)
+}
+
+function sortFilesAlphabetically(files: string[]): string[] {
+  return files.sort((a, b) => a.localeCompare(b, "en-US"))
+}
+
+/**
+ * Sorts a list of files by their total line coverage.
+ * @param files The files list
+ * @param coverageCollection The collection of file coverages.
+ * @param method The method to use while sorting
+ * @returns The sorted list of file names.
+ */
+export function sortFiles(files: string[], coverageCollection: CoverageCollection, method: SortMethod) {
+  switch (method) {
+    case "alphabetically":
+      return sortFilesAlphabetically(files)
+    case "least-coverage":
+      return sortFileByCoverageKey(files, coverageCollection, true, "pct")
+    case "most-coverage":
+      return sortFileByCoverageKey(files, coverageCollection, false, "pct")
+    case "largest-file-size":
+      return sortFileByCoverageKey(files, coverageCollection, false, "total")
+    case "smallest-file-size":
+      return sortFileByCoverageKey(files, coverageCollection, true, "total")
+    case "uncovered-lines":
+      return sortFileByCoverageKey(files, coverageCollection, false, "skipped")
+  }
+}
+
+export function makeCoverageModel(
+  numberOfEntries: number,
+  files: string[],
+  coverageCollection: CoverageCollection,
+  sortMethod: SortMethod = "alphabetically"
+) {
+  const sortedFiles = sortFiles(files, coverageCollection, sortMethod)
 
   const displayedFiles = sortedFiles.slice(0, Math.min(sortedFiles.length, numberOfEntries))
   const displayedEntries = displayedFiles.map(file => coverageCollection[file])
