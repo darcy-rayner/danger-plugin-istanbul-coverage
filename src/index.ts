@@ -16,6 +16,7 @@ import * as _ from "lodash"
 import * as path from "path"
 import { escapeMarkdownCharacters, getPrettyPathName } from "./filename-utils"
 import { GitService } from "./git.service"
+export { Config, ReportFileSet, ReportMode } from "./config.model"
 
 export declare function message(message: string): void
 export declare function warn(message: string): void
@@ -27,52 +28,53 @@ function filterForCoveredFiles(basePath: string, files: string[], coverage: Cove
 }
 
 function getFileSet(reportChangeType: ReportFileSet, all: string[], modified: string[], created: string[]): string[] {
-  if (reportChangeType === "all") {
-    return all
+  switch (reportChangeType) {
+    case ReportFileSet.All:
+      return all
+    case ReportFileSet.Created:
+      return created
+    case ReportFileSet.Modified:
+      return modified
+    case ReportFileSet.CreatedOrModified:
+      return _.union(created, modified)
   }
-  if (reportChangeType === "modified") {
-    return modified
-  }
-  if (reportChangeType === "created") {
-    return created
-  }
-  return _.union(created, modified)
 }
 
 function getReportFunc(reportMode: ReportMode) {
-  if (reportMode === "warn") {
-    return warn
+  switch (reportMode) {
+    case ReportMode.Warn:
+      return warn
+    case ReportMode.Fail:
+      return fail
+    case ReportMode.Message:
+      return message
   }
-  if (reportMode === "fail") {
-    return fail
-  }
-  return message
 }
 
 function getFileGroupLongDescription(reportChangeType: ReportFileSet) {
-  if (reportChangeType === "all") {
-    return "the whole codebase"
+  switch (reportChangeType) {
+    case ReportFileSet.All:
+      return "the whole codebase"
+    case ReportFileSet.Created:
+      return "the new files in this PR"
+    case ReportFileSet.Modified:
+      return "the modified files in this PR"
+    case ReportFileSet.CreatedOrModified:
+      return "the modified or changed files in this PR"
   }
-  if (reportChangeType === "created") {
-    return "the new files in this PR"
-  }
-  if (reportChangeType === "modified") {
-    return "the modified files in this PR"
-  }
-  return "the modified or changed files in this PR"
 }
 
 function getFileGroupShortDescription(reportChangeType: ReportFileSet) {
-  if (reportChangeType === "all") {
-    return "All Files"
+  switch (reportChangeType) {
+    case ReportFileSet.All:
+      return "All Files"
+    case ReportFileSet.Created:
+      return "New Files"
+    case ReportFileSet.Modified:
+      return "Modified Files"
+    case ReportFileSet.CreatedOrModified:
+      return "Created or Modified Files"
   }
-  if (reportChangeType === "created") {
-    return "New Files"
-  }
-  if (reportChangeType === "modified") {
-    return "Modified Files"
-  }
-  return "Created or Modified Files"
 }
 
 function sendPRComment(config: Config, results: CoverageEntry) {

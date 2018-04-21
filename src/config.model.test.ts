@@ -1,11 +1,11 @@
-import { makeCompleteConfiguration } from "./config.model"
+import { makeCompleteConfiguration, ReportFileSet, ReportMode, SortMethod } from "./config.model"
 
 describe("makeCompleteConfiguration", () => {
   const base = {
     coveragePath: "./coverage/coverage-summary.json",
-    reportFileSet: "all",
-    reportMode: "message",
-    entrySortMethod: "alphabetically",
+    reportFileSet: ReportFileSet.All,
+    reportMode: ReportMode.Message,
+    entrySortMethod: SortMethod.Alphabetically,
     numberOfEntries: 10,
     threshold: {
       statements: 100,
@@ -22,11 +22,11 @@ describe("makeCompleteConfiguration", () => {
 
   it("overrides a specific value from the default", () => {
     const output = makeCompleteConfiguration({
-      reportMode: "warn",
+      reportMode: ReportMode.Warn,
     })
     expect(output).toEqual({
       ...base,
-      reportMode: "warn",
+      reportMode: ReportMode.Warn,
     })
   })
 })

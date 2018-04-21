@@ -35,7 +35,7 @@ schedule(istanbulCoverage({
   customFailureMessage: "Coverage is a little low, take a look",
 
   // How to sort the entries in the table
-  entrySortMethod: "alphabetical" // || "least-coverage" || "most-coverage" || "largest-file-size" ||"smallest-file-size" || "uncovered-lines"
+  entrySortMethod: SortMethod.Alphabetical // || LeastCoverage|| MostCoverage || LargestFileSize ||SmallestFileSize || UncoveredLines
 
   // Add a maximum number of entries to display
   numberOfEntries: 10,
@@ -44,10 +44,10 @@ schedule(istanbulCoverage({
   coveragePath: "./coverage/coverage-summary.json",
 
   // Which set of files to summarise from the coverage file.
-  reportFileSet: "all", // || "modified" || "created" || "createdOrModified"
+  reportFileSet: ReportFileSet.All, // || Modified || Created || CreatedOrModified
 
   // What to do when the PR doesn't meet the minimum code coverage threshold
-  reportMode: "message", // || "warn" || "fail"
+  reportMode: ReportMode.Message, // || Warn || Fail
 
   // Minimum coverage threshold percentages. Compared against the cumulative coverage of the reportFileSet. 
   threshold: {

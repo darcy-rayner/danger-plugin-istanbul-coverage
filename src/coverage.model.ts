@@ -107,17 +107,17 @@ function sortFilesAlphabetically(files: string[]): string[] {
  */
 export function sortFiles(files: string[], coverageCollection: CoverageCollection, method: SortMethod) {
   switch (method) {
-    case "alphabetically":
+    case SortMethod.Alphabetically:
       return sortFilesAlphabetically(files)
-    case "least-coverage":
+    case SortMethod.LeastCoverage:
       return sortFileByCoverageKey(files, coverageCollection, true, "pct")
-    case "most-coverage":
+    case SortMethod.MostCoverage:
       return sortFileByCoverageKey(files, coverageCollection, false, "pct")
-    case "largest-file-size":
+    case SortMethod.LargestFileSize:
       return sortFileByCoverageKey(files, coverageCollection, false, "total")
-    case "smallest-file-size":
+    case SortMethod.SmallestFileSize:
       return sortFileByCoverageKey(files, coverageCollection, true, "total")
-    case "uncovered-lines":
+    case SortMethod.UncoveredLines:
       return sortFileByCoverageKey(files, coverageCollection, false, "skipped")
   }
 }
@@ -126,7 +126,7 @@ export function makeCoverageModel(
   numberOfEntries: number,
   files: string[],
   coverageCollection: CoverageCollection,
-  sortMethod: SortMethod = "alphabetically"
+  sortMethod: SortMethod = SortMethod.Alphabetically
 ) {
   const sortedFiles = sortFiles(files, coverageCollection, sortMethod)
 

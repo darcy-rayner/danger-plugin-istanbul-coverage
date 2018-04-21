@@ -1,4 +1,5 @@
 import * as path from "path"
+import { ReportFileSet, ReportMode } from "./config.model"
 import FilesystemService from "./filesystem.service"
 import { GitService } from "./git.service"
 import { istanbulCoverage } from "./index"
@@ -90,7 +91,7 @@ describe("istanbulCoverage()", () => {
 
   it('will only report on new files when reportFileSet is set to "created"', async () => {
     await istanbulCoverage({
-      reportFileSet: "created",
+      reportFileSet: ReportFileSet.Created,
     })
     expect(global.markdown).toHaveBeenCalledWith(
       `## Coverage in New Files
@@ -105,7 +106,7 @@ Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
 
   it('will only report on modified files when reportFileSet is set to "modified"', async () => {
     await istanbulCoverage({
-      reportFileSet: "modified",
+      reportFileSet: ReportFileSet.Modified,
     })
     expect(global.markdown).toHaveBeenCalledWith(
       `## Coverage in Modified Files
@@ -119,7 +120,7 @@ Total | (165/200) 83% | (75/200) 38% | (100/200) 50% | (75/200) 38%
   })
   it('will only report on created and modified files when reportFileSet is set to "createdOrModified"', async () => {
     await istanbulCoverage({
-      reportFileSet: "createdOrModified",
+      reportFileSet: ReportFileSet.CreatedOrModified,
     })
     expect(global.markdown).toHaveBeenCalledWith(
       `## Coverage in Created or Modified Files
@@ -136,7 +137,7 @@ Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
 
   it('will report all files when reportFileSet is set to "all"', async () => {
     await istanbulCoverage({
-      reportFileSet: "all",
+      reportFileSet: ReportFileSet.All,
     })
     expect(global.markdown).toHaveBeenCalledWith(
       `## Coverage in All Files
@@ -154,7 +155,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
 
   it("will only show the maximum number of entries", async () => {
     await istanbulCoverage({
-      reportFileSet: "all",
+      reportFileSet: ReportFileSet.All,
       numberOfEntries: 3,
     })
     expect(global.markdown).toHaveBeenCalledWith(
@@ -172,14 +173,14 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
 
   it("fails the build when reportMode is set to FAIL and coverage is below threshold", async () => {
     await istanbulCoverage({
-      reportMode: "fail",
+      reportMode: ReportMode.Fail,
     })
     expect(global.fail).toBeCalled()
   })
 
   it("passes the build when reportMode is set to FAIL and coverage is above threshold", async () => {
     await istanbulCoverage({
-      reportMode: "fail",
+      reportMode: ReportMode.Fail,
       threshold: {
         lines: 25,
         statements: 25,
@@ -192,14 +193,14 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
 
   it("warns the build when reportMode is set to WARN and coverage is below threshold", async () => {
     await istanbulCoverage({
-      reportMode: "warn",
+      reportMode: ReportMode.Warn,
     })
     expect(global.warn).toBeCalled()
   })
 
   it("passes the build when reportMode is set to WARN and coverage is above threshold", async () => {
     await istanbulCoverage({
-      reportMode: "warn",
+      reportMode: ReportMode.Warn,
       threshold: {
         lines: 25,
         statements: 25,
@@ -213,7 +214,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   it("logs the custom success message if one is specified and coverage is above threshold", async () => {
     const customMessage = "This is the custom message"
     await istanbulCoverage({
-      reportMode: "message",
+      reportMode: ReportMode.Message,
       customSuccessMessage: customMessage,
       threshold: {
         lines: 25,
@@ -228,7 +229,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   it("logs the custom failure message if one is specified and coverage is below threshold", async () => {
     const customMessage = "This is the custom message"
     await istanbulCoverage({
-      reportMode: "message",
+      reportMode: ReportMode.Message,
       customFailureMessage: customMessage,
     })
     expect(global.message).toBeCalledWith(customMessage)
@@ -237,8 +238,8 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   it('doesn\'t output anything when reportFileSet is set to "created" and there are no created files ', async () => {
     global.danger.git.created_files = []
     await istanbulCoverage({
-      reportMode: "fail",
-      reportFileSet: "created",
+      reportMode: ReportMode.Fail,
+      reportFileSet: ReportFileSet.Created,
     })
     expect(global.fail).not.toBeCalled()
     expect(global.warn).not.toBeCalled()
@@ -248,8 +249,8 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   it('doesn\'t output anything when reportFileSet is set to "modified" and there are no modified files ', async () => {
     global.danger.git.modified_files = []
     await istanbulCoverage({
-      reportMode: "fail",
-      reportFileSet: "modified",
+      reportMode: ReportMode.Fail,
+      reportFileSet: ReportFileSet.Modified,
     })
     expect(global.fail).not.toBeCalled()
     expect(global.warn).not.toBeCalled()
@@ -258,7 +259,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   it("doesn't output anything when the coverage data is empty", async () => {
     setupCoverageFile("{}")
     await istanbulCoverage({
-      reportMode: "fail",
+      reportMode: ReportMode.Fail,
     })
     expect(global.fail).not.toBeCalled()
     expect(global.warn).not.toBeCalled()
@@ -267,14 +268,14 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
   it("outputs a warning when it can't find the coverage file", async () => {
     setupCoverageFile(undefined)
     await istanbulCoverage({
-      reportMode: "warn",
+      reportMode: ReportMode.Warn,
     })
     expect(global.warn).toBeCalled()
   })
   it("outputs a warning when coverage file is invalidly formatted", async () => {
     setupCoverageFile("{")
     await istanbulCoverage({
-      reportMode: "fail",
+      reportMode: ReportMode.Fail,
     })
     expect(global.warn).toBeCalled()
   })
