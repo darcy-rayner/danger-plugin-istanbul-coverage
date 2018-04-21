@@ -1,12 +1,14 @@
 export type ReportFileSet = "created" | "modified" | "createdOrModified" | "all"
 export type ReportMode = "fail" | "warn" | "message"
-export type SortMethod =
-  | "alphabetically"
-  | "least-coverage"
-  | "most-coverage"
-  | "largest-file-size"
-  | "smallest-file-size"
-  | "uncovered-lines"
+
+export enum SortMethod {
+  Alphabetically = "alphabetically",
+  LeastCoverage = "least-coverage",
+  MostCoverage = "most-coverage",
+  LargestFileSize = "largest-file-size",
+  SmallestFileSize = "smallest-file-size",
+  UncoveredLines = "uncovered-lines",
+}
 
 export interface CoverageThreshold {
   statements: number
@@ -36,7 +38,7 @@ export function makeCompleteConfiguration(config?: Partial<Config>): Config {
     coveragePath: "./coverage/coverage-summary.json",
     reportFileSet: "all",
     reportMode: "message",
-    entrySortMethod: "alphabetically",
+    entrySortMethod: SortMethod.Alphabetically,
     numberOfEntries: 10,
     threshold: {
       statements: 100,

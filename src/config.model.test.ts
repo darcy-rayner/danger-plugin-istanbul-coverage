@@ -1,11 +1,11 @@
-import { makeCompleteConfiguration } from "./config.model"
+import { makeCompleteConfiguration, SortMethod } from "./config.model"
 
 describe("makeCompleteConfiguration", () => {
   const base = {
     coveragePath: "./coverage/coverage-summary.json",
     reportFileSet: "all",
     reportMode: "message",
-    entrySortMethod: "alphabetically",
+    entrySortMethod: SortMethod.Alphabetically,
     numberOfEntries: 10,
     threshold: {
       statements: 100,

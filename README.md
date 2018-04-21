@@ -35,7 +35,7 @@ schedule(istanbulCoverage({
   customFailureMessage: "Coverage is a little low, take a look",
 
   // How to sort the entries in the table
-  entrySortMethod: "alphabetical" // || "least-coverage" || "most-coverage" || "largest-file-size" ||"smallest-file-size" || "uncovered-lines"
+  entrySortMethod: SortMethod.Alphabetical // || LeastCoverage|| MostCoverage || LargestFileSize ||SmallestFileSize || UncoveredLines
 
   // Add a maximum number of entries to display
   numberOfEntries: 10,
