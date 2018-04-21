@@ -44,7 +44,7 @@ schedule(istanbulCoverage({
   coveragePath: "./coverage/coverage-summary.json",
 
   // Which set of files to summarise from the coverage file.
-  reportFileSet: "all", // || "modified" || "created" || "createdOrModified"
+  reportFileSet: ReportFileSet.All, // || Modified || Created || CreatedOrModified
 
   // What to do when the PR doesn't meet the minimum code coverage threshold
   reportMode: ReportMode.Message, // || Warn || Fail

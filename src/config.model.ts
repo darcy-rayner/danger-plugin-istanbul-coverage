@@ -1,4 +1,9 @@
-export type ReportFileSet = "created" | "modified" | "createdOrModified" | "all"
+export enum ReportFileSet {
+  Created = "created",
+  Modified = "modified",
+  CreatedOrModified = "createdOrModified",
+  All = "all",
+}
 export enum ReportMode {
   Fail = "fail",
   Warn = "warn",
@@ -40,7 +45,7 @@ export interface Config {
 export function makeCompleteConfiguration(config?: Partial<Config>): Config {
   const defaults: Config = {
     coveragePath: "./coverage/coverage-summary.json",
-    reportFileSet: "all",
+    reportFileSet: ReportFileSet.All,
     reportMode: ReportMode.Message,
     entrySortMethod: SortMethod.Alphabetically,
     numberOfEntries: 10,

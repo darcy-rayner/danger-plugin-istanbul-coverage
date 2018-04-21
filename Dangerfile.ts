@@ -1,10 +1,9 @@
 import { danger, schedule } from "danger"
-
-import { istanbulCoverage } from "./src/index"
+import { istanbulCoverage, ReportFileSet } from "./src/index"
 
 schedule(
   istanbulCoverage({
-    reportFileSet: "modified",
+    reportFileSet: ReportFileSet.Modified,
     threshold: {
       statements: 70,
       branches: 70,

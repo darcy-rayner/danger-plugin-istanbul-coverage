@@ -1,9 +1,9 @@
-import { makeCompleteConfiguration, ReportMode, SortMethod } from "./config.model"
+import { makeCompleteConfiguration, ReportFileSet, ReportMode, SortMethod } from "./config.model"
 
 describe("makeCompleteConfiguration", () => {
   const base = {
     coveragePath: "./coverage/coverage-summary.json",
-    reportFileSet: "all",
+    reportFileSet: ReportFileSet.All,
     reportMode: ReportMode.Message,
     entrySortMethod: SortMethod.Alphabetically,
     numberOfEntries: 10,
