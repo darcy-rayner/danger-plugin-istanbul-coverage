@@ -47,7 +47,7 @@ schedule(istanbulCoverage({
   reportFileSet: "all", // || "modified" || "created" || "createdOrModified"
 
   // What to do when the PR doesn't meet the minimum code coverage threshold
-  reportMode: "message", // || "warn" || "fail"
+  reportMode: ReportMode.Message, // || Warn || Fail
 
   // Minimum coverage threshold percentages. Compared against the cumulative coverage of the reportFileSet. 
   threshold: {

@@ -1,5 +1,9 @@
 export type ReportFileSet = "created" | "modified" | "createdOrModified" | "all"
-export type ReportMode = "fail" | "warn" | "message"
+export enum ReportMode {
+  Fail = "fail",
+  Warn = "warn",
+  Message = "message",
+}
 
 export enum SortMethod {
   Alphabetically = "alphabetically",
@@ -37,7 +41,7 @@ export function makeCompleteConfiguration(config?: Partial<Config>): Config {
   const defaults: Config = {
     coveragePath: "./coverage/coverage-summary.json",
     reportFileSet: "all",
-    reportMode: "message",
+    reportMode: ReportMode.Message,
     entrySortMethod: SortMethod.Alphabetically,
     numberOfEntries: 10,
     threshold: {

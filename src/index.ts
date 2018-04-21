@@ -40,13 +40,14 @@ function getFileSet(reportChangeType: ReportFileSet, all: string[], modified: st
 }
 
 function getReportFunc(reportMode: ReportMode) {
-  if (reportMode === "warn") {
-    return warn
+  switch (reportMode) {
+    case ReportMode.Warn:
+      return warn
+    case ReportMode.Fail:
+      return fail
+    case ReportMode.Message:
+      return message
   }
-  if (reportMode === "fail") {
-    return fail
-  }
-  return message
 }
 
 function getFileGroupLongDescription(reportChangeType: ReportFileSet) {
