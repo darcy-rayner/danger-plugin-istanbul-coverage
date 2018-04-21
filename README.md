@@ -42,6 +42,8 @@ schedule(istanbulCoverage({
 
   // The location of the istanbul coverage file.
   coveragePath: "./coverage/coverage-summary.json",
+  // Alternatively, if you have multiple coverage summaries, you can merge them into one report
+  coveragePaths: ["./dir1/coverage-summary.json", "./dir2/coverage-summary.json"]
 
   // Which set of files to summarise from the coverage file.
   reportFileSet: "all", // || "modified" || "created" || "createdOrModified"
