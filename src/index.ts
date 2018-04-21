@@ -138,21 +138,36 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
   return [header, ...lines, ellided, total, ""].filter(part => part !== undefined).join("\n")
 }
 
+function getCoveragePaths(coveragePaths: string[]): string[] {
+  return coveragePaths.map(singleCoveragePath => {
+    if (!process.mainModule) {
+      return singleCoveragePath
+    }
+    const appDir = `${process.mainModule.paths[0].split("node_modules")[0].slice(0, -1)}/`
+    return path.resolve(appDir, singleCoveragePath)
+  })
+}
+
+function getCombinedCoverageCollection(coveragePaths: string[]): CoverageCollection {
+  return coveragePaths
+    .map(coveragePath => {
+      const collection = parseCoverageCollection(coveragePath)
+      return collection ? collection : {}
+    })
+    .reduce((previous, current) => ({ ...previous, ...current }), {})
+}
+
 /**
  * Danger.js plugin for monitoring code coverage on changed files.
  */
 export function istanbulCoverage(config?: Partial<Config>): Promise<void> {
   const combinedConfig = makeCompleteConfiguration(config)
 
-  let coveragePath = combinedConfig.coveragePath
-  if (process.mainModule) {
-    const appDir = `${process.mainModule.paths[0].split("node_modules")[0].slice(0, -1)}/`
+  const coveragePaths = getCoveragePaths(combinedConfig.coveragePaths)
 
-    coveragePath = path.resolve(appDir, combinedConfig.coveragePath)
-  }
   let coverage: CoverageCollection
   try {
-    const parsedCoverage = parseCoverageCollection(coveragePath)
+    const parsedCoverage = getCombinedCoverageCollection(coveragePaths)
     if (!parsedCoverage) {
       return Promise.resolve()
     }

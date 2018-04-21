@@ -46,11 +46,12 @@ function setupGitService() {
   })
 }
 
-function setupCoverageFile(coverage?: string) {
+function setupCoverageFile(coverages: string[] = []) {
   ;(FilesystemService as any).mockImplementation(() => {
     return {
-      exists: p => coverage !== undefined,
+      exists: p => coverages.length !== 0,
       read: p => {
+        const coverage = coverages.pop()
         return coverage !== undefined ? Buffer.from(coverage, "utf8") : undefined
       },
     }
@@ -70,14 +71,16 @@ describe("istanbulCoverage()", () => {
       },
     }
     setupGitService()
-    setupCoverageFile(`{
+    setupCoverageFile([
+      `{
       ${makeEntry("total", 50, 50, 50, 50)},
       ${makeEntry(`${__dirname}/src/modified-file1.ts`, 66, 25, 25, 25)},
       ${makeEntry(`${__dirname}/src/modified-file2.ts`, 99, 50, 75, 50)},
       ${makeEntry(`${__dirname}/src/created-file1.ts`, 66, 100, 25, 50)},
       ${makeEntry(`${__dirname}/src/created-file2.ts`, 99, 75, 50, 25)},
       ${makeEntry(`${__dirname}/src/unmodified-field.ts`, 25, 25, 25, 25)}
-    }`)
+    }`,
+    ])
   })
 
   afterEach(() => {
@@ -99,6 +102,36 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 [src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
 [src/created\\-file2.ts](../blob/master/src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
 Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
+`
+    )
+  })
+
+  it("can combine multiple coverage files", async () => {
+    setupCoverageFile([
+      `{
+        ${makeEntry("total", 50, 50, 50, 50)},
+        ${makeEntry(`${__dirname}/src/modified-file1.ts`, 66, 25, 25, 25)},
+        ${makeEntry(`${__dirname}/src/modified-file2.ts`, 99, 50, 75, 50)}
+      }`,
+      `{
+        ${makeEntry("total", 50, 50, 50, 50)},
+        ${makeEntry(`${__dirname}/src/created-file1.ts`, 66, 100, 25, 50)},
+        ${makeEntry(`${__dirname}/src/created-file2.ts`, 99, 75, 50, 25)}
+      }`,
+    ])
+    await istanbulCoverage({
+      reportFileSet: "createdOrModified",
+      coveragePaths: ["coverage-path-1", "coverage-path-2"],
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in Created or Modified Files
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------: | -----------------: | ----------------: | --------------:
+[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created\\-file2.ts](../blob/master/src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+[src/modified\\-file1.ts](../blob/master/src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
+[src/modified\\-file2.ts](../blob/master/src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
+Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
 `
     )
   })
@@ -256,7 +289,7 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
     expect(global.message).not.toBeCalled()
   })
   it("doesn't output anything when the coverage data is empty", async () => {
-    setupCoverageFile("{}")
+    setupCoverageFile(["{}"])
     await istanbulCoverage({
       reportMode: "fail",
     })
@@ -265,14 +298,14 @@ Total | (355/500) 71% | (275/500) 55% | (200/500) 40% | (175/500) 35%
     expect(global.message).not.toBeCalled()
   })
   it("outputs a warning when it can't find the coverage file", async () => {
-    setupCoverageFile(undefined)
+    setupCoverageFile([])
     await istanbulCoverage({
       reportMode: "warn",
     })
     expect(global.warn).toBeCalled()
   })
   it("outputs a warning when coverage file is invalidly formatted", async () => {
-    setupCoverageFile("{")
+    setupCoverageFile(["{"])
     await istanbulCoverage({
       reportMode: "fail",
     })

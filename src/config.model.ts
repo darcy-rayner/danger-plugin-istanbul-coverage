@@ -20,7 +20,8 @@ export interface Config {
   customFailureMessage?: string
   numberOfEntries: number
   entrySortMethod: SortMethod
-  coveragePath: string
+  coveragePath?: string
+  coveragePaths: string[]
   reportFileSet: ReportFileSet
   threshold: CoverageThreshold
   reportMode: ReportMode
@@ -33,7 +34,7 @@ export interface Config {
  */
 export function makeCompleteConfiguration(config?: Partial<Config>): Config {
   const defaults: Config = {
-    coveragePath: "./coverage/coverage-summary.json",
+    coveragePaths: [],
     reportFileSet: "all",
     reportMode: "message",
     entrySortMethod: "alphabetically",
@@ -45,5 +46,10 @@ export function makeCompleteConfiguration(config?: Partial<Config>): Config {
       lines: 100,
     },
   }
-  return config ? { ...defaults, ...config } : defaults
+
+  const combined = config ? { ...defaults, ...config } : defaults
+  const coveragePath = combined.coveragePath ? combined.coveragePath : "./coverage/coverage-summary.json"
+  const coveragePaths = combined.coveragePaths.length === 0 ? [coveragePath] : combined.coveragePaths
+  delete combined.coveragePath
+  return { ...combined, coveragePaths }
 }
