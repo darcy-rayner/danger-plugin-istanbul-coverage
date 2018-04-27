@@ -6,7 +6,6 @@ import {
   CoverageModel,
   makeCoverageModel,
   meetsThreshold,
-  parseCoverageCollection,
   sortFiles,
 } from "./coverage.model"
 

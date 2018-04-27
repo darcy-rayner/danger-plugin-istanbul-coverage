@@ -8,8 +8,8 @@ import {
   CoverageModel,
   makeCoverageModel,
   meetsThreshold,
-  parseCoverageCollection,
 } from "./coverage.model"
+import { parseJsonSummary } from "./parser/parse-json-summary"
 
 declare var danger: DangerDSLType
 import * as _ from "lodash"
@@ -151,7 +151,7 @@ function getCoveragePaths(coveragePaths: string[]): string[] {
 function getCombinedCoverageCollection(coveragePaths: string[]): CoverageCollection {
   return coveragePaths
     .map(coveragePath => {
-      const collection = parseCoverageCollection(coveragePath)
+      const collection = parseJsonSummary(coveragePath)
       return collection ? collection : {}
     })
     .reduce((previous, current) => ({ ...previous, ...current }), {})
