@@ -150,10 +150,7 @@ function getCoveragePaths(coveragePaths: string[]): string[] {
 
 function getCombinedCoverageCollection(coveragePaths: string[]): CoverageCollection {
   return coveragePaths
-    .map(coveragePath => {
-      const collection = parseJsonSummary(coveragePath)
-      return collection ? collection : {}
-    })
+    .map(coveragePath => parseJsonSummary(coveragePath))
     .reduce((previous, current) => ({ ...previous, ...current }), {})
 }
 

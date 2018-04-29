@@ -56,7 +56,13 @@ function isCoverageCollection(collection: any): collection is CoverageCollection
   return true
 }
 
-export function parseJsonSummary(coveragePath: string): CoverageCollection | undefined {
+/**
+ * Parses a json-summary formatted output from istanbul
+ * @param coveragePath The path of the coverage file
+ * @returns A coverage collection
+ * @throws Throws an error if formatting is invalid.
+ */
+export function parseJsonSummary(coveragePath: string): CoverageCollection {
   const filesystem = new FilesystemService()
 
   if (!filesystem.exists(coveragePath)) {
@@ -68,7 +74,7 @@ export function parseJsonSummary(coveragePath: string): CoverageCollection | und
     json = JSON.parse(filesystem.read(coveragePath))
     if (Object.keys(json).length === 0) {
       // Don't output anything if there is no coverage data.
-      return undefined
+      return {}
     }
   } catch (error) {
     throw Error(`Coverage data had invalid formatting at path '${coveragePath}'`)
