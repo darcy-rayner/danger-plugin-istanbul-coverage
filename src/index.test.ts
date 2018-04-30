@@ -52,7 +52,7 @@ function setupCoverageFile(coverages: string[] = []) {
       exists: p => coverages.length !== 0,
       read: p => {
         const coverage = coverages.pop()
-        return coverage !== undefined ? Buffer.from(coverage, "utf8") : undefined
+        return coverage !== undefined ? coverage : undefined
       },
     }
   })
@@ -106,6 +106,22 @@ Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
     )
   })
 
+  it("will find a coverage file when using an explict source type", async () => {
+    await istanbulCoverage({
+      coveragePath: { path: "coverage-summary.json", type: "json-summary" },
+      reportFileSet: "created",
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in New Files
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------: | -----------------: | ----------------: | --------------:
+[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (66/100) 66% | (100/100) 100% | (25/100) 25% | (50/100) 50%
+[src/created\\-file2.ts](../blob/master/src/created\\-file2.ts) | (99/100) 99% | (75/100) 75% | (50/100) 50% | (25/100) 25%
+Total | (165/200) 83% | (175/200) 88% | (75/200) 38% | (75/200) 38%
+`
+    )
+  })
+
   it("can combine multiple coverage files", async () => {
     setupCoverageFile([
       `{
@@ -132,6 +148,61 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
 [src/modified\\-file1.ts](../blob/master/src/modified\\-file1.ts) | (66/100) 66% | (25/100) 25% | (25/100) 25% | (25/100) 25%
 [src/modified\\-file2.ts](../blob/master/src/modified\\-file2.ts) | (99/100) 99% | (50/100) 50% | (75/100) 75% | (50/100) 50%
 Total | (330/400) 83% | (250/400) 63% | (175/400) 44% | (150/400) 38%
+`
+    )
+  })
+  it("will automatically infer the lcov source type", async () => {
+    setupCoverageFile([
+      `TN:
+SF: ${__dirname}/src/created-file1.ts
+FN: 1, func1
+FNDA: 1, func1
+FNH: 1
+FNF: 1
+BRF: 8
+BRH: 4
+LH: 15
+LF: 20
+end_of_record`,
+    ])
+    await istanbulCoverage({
+      coveragePath: "lcov.info",
+      reportFileSet: "created",
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in New Files
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------: | -----------------: | ----------------: | --------------:
+[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (15/20) 75% | (15/20) 75% | (1/1) 100% | (4/8) 50%
+Total | (15/20) 75% | (15/20) 75% | (1/1) 100% | (4/8) 50%
+`
+    )
+  })
+
+  it("will use the lcov source type when specified explicitly", async () => {
+    setupCoverageFile([
+      `TN:
+SF: ${__dirname}/src/created-file1.ts
+FN: 1, func1
+FNDA: 1, func1
+FNH: 1
+FNF: 1
+BRF: 8
+BRH: 4
+LH: 15
+LF: 20
+end_of_record`,
+    ])
+    await istanbulCoverage({
+      coveragePath: { path: "some.path", type: "lcov" },
+      reportFileSet: "created",
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in New Files
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------: | -----------------: | ----------------: | --------------:
+[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (15/20) 75% | (15/20) 75% | (1/1) 100% | (4/8) 50%
+Total | (15/20) 75% | (15/20) 75% | (1/1) 100% | (4/8) 50%
 `
     )
   })

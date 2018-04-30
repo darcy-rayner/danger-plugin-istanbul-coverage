@@ -44,6 +44,8 @@ schedule(istanbulCoverage({
   coveragePath: "./coverage/coverage-summary.json",
   // Alternatively, if you have multiple coverage summaries, you can merge them into one report
   coveragePaths: ["./dir1/coverage-summary.json", "./dir2/coverage-summary.json"]
+  // You can also specify the format, instead of letting it be inferred from the file name
+  coveragePath: { path: "./coverage/lcov.info", type: "lcov" /* ||  "json-summary" */}
 
   // Which set of files to summarise from the coverage file.
   reportFileSet: "all", // || "modified" || "created" || "createdOrModified"
@@ -51,7 +53,7 @@ schedule(istanbulCoverage({
   // What to do when the PR doesn't meet the minimum code coverage threshold
   reportMode: "message", // || "warn" || "fail"
 
-  // Minimum coverage threshold percentages. Compared against the cumulative coverage of the reportFileSet. 
+  // Minimum coverage threshold percentages. Compared against the cumulative coverage of the reportFileSet.
   threshold: {
     statements: 100,
     branches: 100,
@@ -61,7 +63,7 @@ schedule(istanbulCoverage({
 }))
 ```
 
-This plugin requires the 'json-summary' report mode be enabled with Istanbul. Make sure Danger runs after your unit tests in your CI workflow. 
+This plugin requires the 'json-summary' or 'lcov' report modes be enabled with Istanbul. Make sure Danger runs after your unit tests in your CI workflow.
 
 ## Changelog
 

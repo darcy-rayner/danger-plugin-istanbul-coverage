@@ -61,25 +61,6 @@ export function combineEntries(first: CoverageEntry, second: CoverageEntry): Cov
   }
 }
 
-export function parseCoverageCollection(coveragePath: string): CoverageCollection | undefined {
-  const filesystem = new FilesystemService()
-
-  if (!filesystem.exists(coveragePath)) {
-    throw Error(`Couldn't find instanbul coverage json file at path '${coveragePath}'.`)
-  }
-
-  try {
-    const json = JSON.parse(filesystem.read(coveragePath))
-    if (Object.keys(json).length === 0) {
-      // Don't output anything if there is no coverage data.
-      return undefined
-    }
-    return json as CoverageCollection
-  } catch (error) {
-    throw Error(`Coverage data had invalid formatting at path '${coveragePath}'`)
-  }
-}
-
 function sortFileByCoverageKey(
   files: string[],
   coverageCollection: CoverageCollection,
