@@ -179,6 +179,34 @@ Total | (15/20) 75% | (15/20) 75% | (1/1) 100% | (4/8) 50%
     )
   })
 
+  it("will use the lcov source type when specified explicitly", async () => {
+    setupCoverageFile([
+      `TN:
+SF: ${__dirname}/src/created-file1.ts
+FN: 1, func1
+FNDA: 1, func1
+FNH: 1
+FNF: 1
+BRF: 8
+BRH: 4
+LH: 15
+LF: 20
+end_of_record`,
+    ])
+    await istanbulCoverage({
+      coveragePath: { path: "some.path", type: "lcov" },
+      reportFileSet: "created",
+    })
+    expect(global.markdown).toHaveBeenCalledWith(
+      `## Coverage in New Files
+File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
+---- | ------------: | -----------------: | ----------------: | --------------:
+[src/created\\-file1.ts](../blob/master/src/created\\-file1.ts) | (15/20) 75% | (15/20) 75% | (1/1) 100% | (4/8) 50%
+Total | (15/20) 75% | (15/20) 75% | (1/1) 100% | (4/8) 50%
+`
+    )
+  })
+
   it('will only report on modified files when reportFileSet is set to "modified"', async () => {
     await istanbulCoverage({
       reportFileSet: "modified",
