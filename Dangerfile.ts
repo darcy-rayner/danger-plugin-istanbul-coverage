@@ -4,7 +4,7 @@ import { istanbulCoverage } from "./src/index"
 
 schedule(
   istanbulCoverage({
-    reportFileSet: "modified",
+    reportFileSet: "createdOrModified",
     threshold: {
       statements: 70,
       branches: 70,
