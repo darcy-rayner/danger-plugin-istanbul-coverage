@@ -8,6 +8,13 @@ export type SortMethod =
   | "smallest-file-size"
   | "uncovered-lines"
 
+export type SourceType = "json-summary" | "lcov"
+export interface SourcePathExplicit {
+  path: string
+  type: SourceType
+}
+export type SourcePath = string | SourcePathExplicit
+
 export interface CoverageThreshold {
   statements: number
   branches: number
@@ -20,8 +27,8 @@ export interface Config {
   customFailureMessage?: string
   numberOfEntries: number
   entrySortMethod: SortMethod
-  coveragePath?: string
-  coveragePaths: string[]
+  coveragePath?: SourcePath
+  coveragePaths: SourcePath[]
   reportFileSet: ReportFileSet
   threshold: CoverageThreshold
   reportMode: ReportMode

@@ -1,6 +1,15 @@
 // Provides dev-time type structures for  `danger` - doesn't affect runtime.
 import { DangerDSLType } from "../node_modules/danger/distribution/dsl/DangerDSL"
-import { Config, CoverageThreshold, makeCompleteConfiguration, ReportFileSet, ReportMode } from "./config.model"
+import {
+  Config,
+  CoverageThreshold,
+  makeCompleteConfiguration,
+  ReportFileSet,
+  ReportMode,
+  SourcePath,
+  SourcePathExplicit,
+  SourceType,
+} from "./config.model"
 import {
   CoverageCollection,
   CoverageEntry,
@@ -16,6 +25,7 @@ import * as _ from "lodash"
 import * as path from "path"
 import { escapeMarkdownCharacters, getPrettyPathName } from "./filename-utils"
 import { GitService } from "./git.service"
+import { parseLcov } from "./parser/parse-lcov"
 
 export declare function message(message: string): void
 export declare function warn(message: string): void
@@ -138,19 +148,38 @@ File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
   return [header, ...lines, ellided, total, ""].filter(part => part !== undefined).join("\n")
 }
 
-function getCoveragePaths(coveragePaths: string[]): string[] {
+function getCoveragePaths(coveragePaths: SourcePath[]): SourcePathExplicit[] {
   return coveragePaths.map(singleCoveragePath => {
+    let originalPath: string
+    let type: SourceType
+    if (typeof singleCoveragePath === "string") {
+      originalPath = singleCoveragePath
+      type = singleCoveragePath.match(/(lcov\.info)$/) ? "lcov" : "json-summary"
+    } else {
+      originalPath = singleCoveragePath.path
+      type = singleCoveragePath.type
+    }
     if (!process.mainModule) {
-      return singleCoveragePath
+      return { path: originalPath, type }
     }
     const appDir = `${process.mainModule.paths[0].split("node_modules")[0].slice(0, -1)}/`
-    return path.resolve(appDir, singleCoveragePath)
+    originalPath = path.resolve(appDir, originalPath)
+    const output: SourcePathExplicit = { path: originalPath, type }
+    return output
   })
 }
 
-function getCombinedCoverageCollection(coveragePaths: string[]): CoverageCollection {
+function parseSourcePath(sourcePath: SourcePathExplicit): CoverageCollection {
+  if (sourcePath.type === "json-summary") {
+    return parseJsonSummary(sourcePath.path)
+  } else {
+    return parseLcov(sourcePath.path)
+  }
+}
+
+function getCombinedCoverageCollection(coveragePaths: SourcePathExplicit[]): CoverageCollection {
   return coveragePaths
-    .map(coveragePath => parseJsonSummary(coveragePath))
+    .map(coveragePath => parseSourcePath(coveragePath))
     .reduce((previous, current) => ({ ...previous, ...current }), {})
 }
 
