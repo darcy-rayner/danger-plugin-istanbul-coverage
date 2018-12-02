@@ -24,13 +24,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "precommit": "lint-staged",
     "commit": "git-cz",
-    "commitmsg": "validate-commit-msg",
     "build": "tsc",
     "test": "jest --collectCoverage",
-    "predocs": "rm -rf docs/",
-    "docs": "esdoc -c .esdoc.json",
     "prepublish": "npm run build",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "prettier": "prettier",
@@ -59,6 +55,12 @@
     "tslint": "^5.4.3",
     "typescript": "^3.2.1",
     "validate-commit-msg": "^2.12.1"
+  },
+  "husky": {
+    "hooks": {
+      "precommit": "lint-staged",
+      "commitmsg": "validate-commit-msg"
+    }
   },
   "config": {
     "commitizen": {
