@@ -21,7 +21,7 @@ export class GitService {
    */
   getCurrentCommit(): Promise<string> {
     return new Promise((resolve, reject) => {
-      exec("git rev-parse --short HEAD", (error, stdout, stderr) => {
+      exec("git rev-list --no-merges --abbrev-commit -n 1 HEAD", (error, stdout, stderr) => {
         const failed = error || stderr !== ""
         resolve(failed ? "HEAD" : trimLineEnding(stdout))
       })
