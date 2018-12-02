@@ -45,7 +45,6 @@
     "commitizen": "^3.0.5",
     "cz-conventional-changelog": "^2.0.0",
     "danger": "*",
-    "fs": "^0.0.1-security",
     "husky": "^1.2.0",
     "jest": "^23.6.0",
     "lint-staged": "^8.1.0",
