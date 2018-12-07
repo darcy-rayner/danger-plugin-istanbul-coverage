@@ -11,6 +11,7 @@ script:
 branches:
   only:
     - master
+    - /^greenkeeper/.*$/
 
 after_success:
   - npm run semantic-release
