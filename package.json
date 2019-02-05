@@ -39,7 +39,7 @@
     "node": ">=4.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.10",
+    "@types/jest": "^24.0.0",
     "@types/lodash": "^4.14.104",
     "@types/node": "^10.12.11",
     "commitizen": "^3.0.5",
