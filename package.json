@@ -43,7 +43,7 @@
     "@types/lodash": "^4.14.135",
     "@types/node": "^12.0.10",
     "commitizen": "^3.1.1",
-    "cz-conventional-changelog": "^2.0.0",
+    "cz-conventional-changelog": "^3.0.3",
     "danger": "9.1.8",
     "husky": "3.0.4",
     "jest": "^24.8.0",
