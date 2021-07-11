@@ -69,7 +69,7 @@ This plugin requires the 'json-summary' or 'lcov' report modes be enabled with I
 
 ### What test runners does this work with?
 
-Anything that integrates with [Istanbul](https://www.npmjs.com/package/istanbul), or produces output in the (lcov)[https://linux.die.net/man/1/lcov] format. Istanbul is test runner agnostic, and can be integrated with anything written in node. Some test runners already integrate Istanbul, for instance [Jest](https://jestjs.io/docs/en/cli.html#coverage)  bundles it internally. Helper integrations exists for [Jasmine](https://www.npmjs.com/package/jasmine-istanbul-reporter) and other libraries.
+Anything that integrates with [Istanbul](https://www.npmjs.com/package/istanbul), or produces output in the [lcov](https://linux.die.net/man/1/lcov) format. Istanbul is test runner agnostic, and can be integrated with anything written in node. Some test runners already integrate Istanbul, for instance [Jest](https://jestjs.io/docs/en/cli.html#coverage)  bundles it internally. Helper integrations exists for [Jasmine](https://www.npmjs.com/package/jasmine-istanbul-reporter) and other libraries.
 
 ### Why should my team see code coverage stats in their PRs?
 
