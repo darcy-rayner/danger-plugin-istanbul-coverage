@@ -53,6 +53,9 @@ schedule(istanbulCoverage({
   // What to do when the PR doesn't meet the minimum code coverage threshold
   reportMode: "message", // || "warn" || "fail"
 
+  // Required for lcov reports which uses relative path.
+  useAbsolutePath: true, // || false
+
   // Minimum coverage threshold percentages. Compared against the cumulative coverage of the reportFileSet.
   threshold: {
     statements: 100,
@@ -69,7 +72,7 @@ This plugin requires the 'json-summary' or 'lcov' report modes be enabled with I
 
 ### What test runners does this work with?
 
-Anything that integrates with [Istanbul](https://www.npmjs.com/package/istanbul), or produces output in the (lcov)[https://linux.die.net/man/1/lcov] format. Istanbul is test runner agnostic, and can be integrated with anything written in node. Some test runners already integrate Istanbul, for instance [Jest](https://jestjs.io/docs/en/cli.html#coverage)  bundles it internally. Helper integrations exists for [Jasmine](https://www.npmjs.com/package/jasmine-istanbul-reporter) and other libraries.
+Anything that integrates with [Istanbul](https://www.npmjs.com/package/istanbul), or produces output in the (lcov)[https://linux.die.net/man/1/lcov] format. Istanbul is test runner agnostic, and can be integrated with anything written in node. Some test runners already integrate Istanbul, for instance [Jest](https://jestjs.io/docs/en/cli.html#coverage) bundles it internally. Helper integrations exists for [Jasmine](https://www.npmjs.com/package/jasmine-istanbul-reporter) and other libraries.
 
 ### Why should my team see code coverage stats in their PRs?
 
