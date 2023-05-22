@@ -1,18 +1,18 @@
 {
-  "name": "danger-plugin-istanbul-coverage",
-  "description": "Danger.js plugin for monitoring istanbul code coverage on changed files.",
+  "name": "danger-plugin-istanbul-coverage-branchestrue",
+  "description": "Danger.js plugin for monitoring istanbul code coverage on changed files. Forked by Jace Simons to add support for new branchesTrue key in json coverage reports.",
   "author": {
-    "name": "Darcy Rayner",
-    "email": "darcy.rayner@gmail.com"
+    "name": "Jace Simons",
+    "email": "jacesimons10@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/darcy-rayner/danger-plugin-istanbul-coverage.git"
+    "url": "https://github.com/jacesimons10/danger-plugin-istanbul-coverage-branchesTrue.git"
   },
   "bugs": {
-    "url": "https://github.com/darcy-rayner/danger-plugin-istanbul-coverage/issues"
+    "url": "https://github.com/jacesimons10/danger-plugin-istanbul-coverage-branchesTrue/issues"
   },
-  "homepage": "https://github.com/darcy-rayner/danger-plugin-istanbul-coverage#readme",
+  "homepage": "https://github.com/jacesimons10/danger-plugin-istanbul-coverage-branchesTrue#readme",
   "keywords": [
     "danger",
     "danger-plugin",
@@ -20,7 +20,7 @@
     "coverage",
     "testing"
   ],
-  "version": "0.1.0",
+  "version": "0.2.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

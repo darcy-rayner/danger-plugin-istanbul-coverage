@@ -70,7 +70,7 @@ function isCoverageCollection(collection) {
  * @returns A coverage collection
  * @throws Throws an error if formatting is invalid.
  */
-function parseJsonSummary(coveragePath) {
+export function parseJsonSummary(coveragePath) {
     const filesystem = new filesystem_service_1.default();
     if (!filesystem.exists(coveragePath)) {
         throw Error(`Couldn't find instanbul coverage json file at path '${coveragePath}'.`);
