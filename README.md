@@ -4,7 +4,7 @@
 [![npm version](https://badge.fury.io/js/danger-plugin-istanbul-coverage.svg)](https://badge.fury.io/js/danger-plugin-istanbul-coverage)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) [![Greenkeeper badge](https://badges.greenkeeper.io/darcy-rayner/danger-plugin-istanbul-coverage.svg)](https://greenkeeper.io/)
 
-> Danger.js plugin for monitoring code coverage on changed files.
+> Danger.js plugin for monitoring code coverage on changed files. Forked by Jace Simons to add support for new branchesTrue key in json coverage reports.
 
 <p align="center">
   <img src="example.png" ></img>
@@ -67,9 +67,12 @@ This plugin requires the 'json-summary' or 'lcov' report modes be enabled with I
 
 ## FAQ
 
+** The original plugin was made by Darcy Rayner** . Information on that plugin can be found here: [https://github.com/darcy-rayner/danger-plugin-istanbul-coverage]
+** This is a fork of that project** which adds support for the new branchesTrue key in the json coverage summary format.
+
 ### What test runners does this work with?
 
-Anything that integrates with [Istanbul](https://www.npmjs.com/package/istanbul), or produces output in the (lcov)[https://linux.die.net/man/1/lcov] format. Istanbul is test runner agnostic, and can be integrated with anything written in node. Some test runners already integrate Istanbul, for instance [Jest](https://jestjs.io/docs/en/cli.html#coverage)  bundles it internally. Helper integrations exists for [Jasmine](https://www.npmjs.com/package/jasmine-istanbul-reporter) and other libraries.
+Anything that integrates with [Istanbul](https://www.npmjs.com/package/istanbul), or produces output in the (lcov)[https://linux.die.net/man/1/lcov] format. Istanbul is test runner agnostic, and can be integrated with anything written in node. Some test runners already integrate Istanbul, for instance [Jest](https://jestjs.io/docs/en/cli.html#coverage) bundles it internally. Helper integrations exists for [Jasmine](https://www.npmjs.com/package/jasmine-istanbul-reporter) and other libraries.
 
 ### Why should my team see code coverage stats in their PRs?
 
