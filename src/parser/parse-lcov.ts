@@ -166,7 +166,7 @@ export function parseLcov(coveragePath: string): CoverageCollection {
   const filesystem = new FilesystemService()
 
   if (!filesystem.exists(coveragePath)) {
-    throw Error(`Couldn't find instanbul coverage json file at path '${coveragePath}'.`)
+    throw Error(`Couldn't find instanbul lcov coverage json file at path '${coveragePath}'.`)
   }
 
   let content: string
