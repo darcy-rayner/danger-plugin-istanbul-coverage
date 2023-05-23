@@ -1,5 +1,5 @@
 import FilesystemService from "../filesystem.service"
-import { parseJsonSummary } from "./parse-json-summary"
+import parseJsonSummary from "./parse-json-summary"
 
 jest.mock("../filesystem.service")
 

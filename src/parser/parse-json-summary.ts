@@ -1,17 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-Object.defineProperty(exports, "__esModule", { value: true });
-const filesystem_service_1 = require("../filesystem.service");
-const lodash_1 = require("lodash");
-function isObject(obj) {
-    return obj instanceof Object && obj.constructor === Object;
+import { parse } from "path";
+import { CoverageCollection, CoverageEntry, CoverageItem } from "../coverage.model"
+import FilesystemService from "../filesystem.service"
+
+import { isEqual } from "lodash"
+
+function isObject(obj: any): boolean {
+  return obj instanceof Object && obj.constructor === Object
 }
+
 function isCoverageItem(coverageItem) {
     if (!isObject(coverageItem)) {
         return false;
     }
     const keys = Object.keys(coverageItem).sort();
-    if (!lodash_1.isEqual(keys, ["covered", "pct", "skipped", "total"])) {
+    if (!isEqual(keys, ["covered", "pct", "skipped", "total"])) {
         return false;
     }
     for (const key of keys) {
@@ -30,12 +32,11 @@ function isCoverageEntry(coverageEntry, entryName) {
     if (!isObject(coverageEntry)) {
         return false;
     }
-    else if ((entryName === 'total' && !lodash_1.isEqual(keys, ["branches", "branchesTrue", "functions", "lines", "statements"])) || (entryName !== 'total' && !lodash_1.isEqual(keys, ["branches", "functions", "lines", "statements"]))) {
+    else if ((entryName === 'total' && !isEqual(keys, ["branches", "branchesTrue", "functions", "lines", "statements"])) || (entryName !== 'total' && !isEqual(keys, ["branches", "functions", "lines", "statements"]))) {
 		return false;
 	}
 	else {
 		for (const key of keys) {
-			console.log('key' + key);
 			const entry = coverageEntry[key];
             if (!isCoverageItem(entry)) {
                 return false;
@@ -63,11 +64,10 @@ function isCoverageCollection(collection) {
  * @throws Throws an error if formatting is invalid.
  */
 function parseJsonSummary(coveragePath) {
-    const filesystem = new filesystem_service_1.default();
+    const filesystem = new FilesystemService;
     if (!filesystem.exists(coveragePath)) {
-        //throw Error(`Couldn't find instanbul coverage json file at path '${coveragePath}'.`);
 		console.log(`No coverage found at '${coveragePath}', continuing...\n`);
-		return;
+		return {};
     }
     let json = {};
     try {
@@ -78,7 +78,6 @@ function parseJsonSummary(coveragePath) {
         }
     }
     catch (error) {
-		console.log('first error');
         throw Error(`Coverage data had invalid formatting at path '${coveragePath}'`);
     }
     if (isCoverageCollection(json)) {
@@ -86,9 +85,8 @@ function parseJsonSummary(coveragePath) {
     }
     else {
         // the json is being parsed properly, but it's failing their custom isCoverageCollection method because of the new 'branchesTrue' key which is present in new json outputs
-        console.log('second error');
         throw Error(`Coverage data had invalid formatting at path '${coveragePath}'`);
     }
 }
 
-exports.parseJsonSummary = parseJsonSummary;
+export default parseJsonSummary;

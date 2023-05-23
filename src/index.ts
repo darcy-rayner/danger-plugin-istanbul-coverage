@@ -18,7 +18,7 @@ import {
   makeCoverageModel,
   meetsThreshold,
 } from "./coverage.model"
-import { parseJsonSummary } from "./parser/parse-json-summary"
+import parseJsonSummary from "./parser/parse-json-summary"
 
 declare var danger: DangerDSLType
 import * as _ from "lodash"
