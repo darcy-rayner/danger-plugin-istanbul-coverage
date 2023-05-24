@@ -112,7 +112,7 @@ function formatLinkName(source: string, branchName: string): string {
 function generateReport(basePath: string, branch: string, coverage: CoverageModel, reportChangeType: ReportFileSet) {
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
 | File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage |
-| ---- | ------------: | -----------------: | ----------------: | --------------: |`
+| ---- | ------------: | -----------------: | ----------------: | --------------: |\n`
 
   const lines = Object.keys(coverage.displayed).map(filename => {
     const e = coverage.displayed[filename]
@@ -124,7 +124,7 @@ function generateReport(basePath: string, branch: string, coverage: CoverageMode
       formatItem(e.statements),
       formatItem(e.functions),
       formatItem(e.branches),
-    ].join(" | ")
+    ].join(" | \n")
   })
 
   const ellided =
@@ -136,7 +136,7 @@ function generateReport(basePath: string, branch: string, coverage: CoverageMode
           formatItem(coverage.elided.statements),
           formatItem(coverage.elided.functions),
           formatItem(coverage.elided.branches),
-        ].join(" | ")
+        ].join(" | \n")
 
   const total = [
     "| Total",
@@ -144,7 +144,7 @@ function generateReport(basePath: string, branch: string, coverage: CoverageMode
     formatItem(coverage.total.statements),
     formatItem(coverage.total.functions),
     formatItem(coverage.total.branches),
-  ].join(" | ")
+  ].join(" | \n")
   return [header, ...lines, ellided, total, ""].filter(part => part !== undefined).join("\n")
 }
 
