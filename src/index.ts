@@ -112,7 +112,7 @@ function formatLinkName(source: string, branchName: string): string {
 function generateReport(basePath: string, branch: string, coverage: CoverageModel, reportChangeType: ReportFileSet) {
   const sectionHeader = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}`;
     const tableHeader = `
-| File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage |
+    | File :file_folder: | Line Coverage :speech_balloon: | Statement Coverage :triangular_flag_on_post: | Function Coverage :man_technologist: | Branch Coverage :deciduous_tree: |
 | ---- | ------------: | -----------------: | ----------------: | --------------: |`;
     const lines = Object.keys(coverage.displayed).map(filename => {
         const e = coverage.displayed[filename];
@@ -130,7 +130,7 @@ function generateReport(basePath: string, branch: string, coverage: CoverageMode
     const ellided = coverage.elidedCount === 0
         ? undefined
         : [
-            `| Other (${coverage.elidedCount} more)`,
+            `| Other :point_down: (${coverage.elidedCount} more)`,
             formatItem(coverage.elided.lines),
             formatItem(coverage.elided.statements),
             formatItem(coverage.elided.functions),
@@ -138,7 +138,7 @@ function generateReport(basePath: string, branch: string, coverage: CoverageMode
             ""
         ].join(" | ");
     const total = [
-        "| Total",
+        "| Total :globe_with_meridians: ",
         formatItem(coverage.total.lines),
         formatItem(coverage.total.statements),
         formatItem(coverage.total.functions),
