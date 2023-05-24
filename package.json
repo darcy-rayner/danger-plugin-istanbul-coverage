@@ -27,7 +27,7 @@
     "commit": "git-cz",
     "build": "tsc",
     "test": "jest --collectCoverage",
-    "prepublish": "npm run build",
+    "prepub": "npm run build",
     "semantic-release": "semantic-release",
     "prettier": "prettier",
     "prettier-write": "npm run prettier -- --parser typescript --no-semi --trailing-comma es5 --write --print-width 120",
