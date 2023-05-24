@@ -110,42 +110,42 @@ function formatLinkName(source: string, branchName: string): string {
 }
 
 function generateReport(basePath: string, branch: string, coverage: CoverageModel, reportChangeType: ReportFileSet) {
-  const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
-| File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage |
-| ---- | ------------: | -----------------: | ----------------: | --------------: |\n`
-
-  const lines = Object.keys(coverage.displayed).map(filename => {
-    const e = coverage.displayed[filename]
-    const shortFilename = formatSourceName(path.relative(basePath, filename))
-    const linkFilename = formatLinkName(path.relative(basePath, filename), branch)
-    return [
-      `| [${shortFilename}](${linkFilename})`,
-      formatItem(e.lines),
-      formatItem(e.statements),
-      formatItem(e.functions),
-      formatItem(e.branches),
-    ].join(" | \n")
-  })
-
-  const ellided =
-    coverage.elidedCount === 0
-      ? undefined
-      : [
-          `| Other (${coverage.elidedCount} more)`,
-          formatItem(coverage.elided.lines),
-          formatItem(coverage.elided.statements),
-          formatItem(coverage.elided.functions),
-          formatItem(coverage.elided.branches),
-        ].join(" | \n")
-
-  const total = [
-    "| Total",
-    formatItem(coverage.total.lines),
-    formatItem(coverage.total.statements),
-    formatItem(coverage.total.functions),
-    formatItem(coverage.total.branches),
-  ].join(" | \n")
-  return [header, ...lines, ellided, total, ""].filter(part => part !== undefined).join("\n")
+  const sectionHeader = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}`;
+    const tableHeader = 
+`| File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage |
+| ---- | ------------: | -----------------: | ----------------: | --------------: |`;
+    const lines = Object.keys(coverage.displayed).map(filename => {
+        const e = coverage.displayed[filename];
+        const shortFilename = formatSourceName(path.relative(basePath, filename));
+        const linkFilename = formatLinkName(path.relative(basePath, filename), branch);
+        return [
+            `| [${shortFilename}](${linkFilename})`,
+            formatItem(e.lines),
+            formatItem(e.statements),
+            formatItem(e.functions),
+            formatItem(e.branches),
+			""
+        ].join(" | ");
+    });
+    const ellided = coverage.elidedCount === 0
+        ? undefined
+        : [
+            `| Other (${coverage.elidedCount} more)`,
+            formatItem(coverage.elided.lines),
+            formatItem(coverage.elided.statements),
+            formatItem(coverage.elided.functions),
+            formatItem(coverage.elided.branches),
+			""
+        ].join(" | ");
+    const total = [
+        "| Total",
+        formatItem(coverage.total.lines),
+        formatItem(coverage.total.statements),
+        formatItem(coverage.total.functions),
+        formatItem(coverage.total.branches),
+		""
+    ].join(" | ");
+    return [sectionHeader, tableHeader, ...lines, ellided, total, ""].filter(part => part !== undefined).join("\n");
 }
 
 function getCoveragePaths(coveragePaths: SourcePath[]): SourcePathExplicit[] {
