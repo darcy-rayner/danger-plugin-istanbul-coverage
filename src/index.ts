@@ -111,8 +111,8 @@ function formatLinkName(source: string, branchName: string): string {
 
 function generateReport(basePath: string, branch: string, coverage: CoverageModel, reportChangeType: ReportFileSet) {
   const header = `## Coverage in ${getFileGroupShortDescription(reportChangeType)}
-File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage
----- | ------------: | -----------------: | ----------------: | --------------:`
+| File | Line Coverage | Statement Coverage | Function Coverage | Branch Coverage |
+| ---- | ------------: | -----------------: | ----------------: | --------------: |`
 
   const lines = Object.keys(coverage.displayed).map(filename => {
     const e = coverage.displayed[filename]
