@@ -119,7 +119,7 @@ function generateReport(basePath: string, branch: string, coverage: CoverageMode
     const shortFilename = formatSourceName(path.relative(basePath, filename))
     const linkFilename = formatLinkName(path.relative(basePath, filename), branch)
     return [
-      `[${shortFilename}](${linkFilename})`,
+      `| [${shortFilename}](${linkFilename})`,
       formatItem(e.lines),
       formatItem(e.statements),
       formatItem(e.functions),
@@ -131,7 +131,7 @@ function generateReport(basePath: string, branch: string, coverage: CoverageMode
     coverage.elidedCount === 0
       ? undefined
       : [
-          `Other (${coverage.elidedCount} more)`,
+          `| Other (${coverage.elidedCount} more)`,
           formatItem(coverage.elided.lines),
           formatItem(coverage.elided.statements),
           formatItem(coverage.elided.functions),
@@ -139,7 +139,7 @@ function generateReport(basePath: string, branch: string, coverage: CoverageMode
         ].join(" | ")
 
   const total = [
-    "Total",
+    "| Total",
     formatItem(coverage.total.lines),
     formatItem(coverage.total.statements),
     formatItem(coverage.total.functions),
